@@ -6,7 +6,7 @@ import { Query, ID } from "node-appwrite";
 import { cookies } from "next/headers";
 import { avatarPlaceholderUrl, urls } from "@/constants/admin";
 import { redirect } from "next/navigation";
-import {  User, UserCms } from "@/types";
+import {  User,   } from "@/types";
 import { parseStringify } from "../utils";
 
 const getUserByEmail = async (email: string) => {
@@ -153,7 +153,7 @@ export const signOutUser = async () => {
 export const signInUser = async ({ email }: { email: string }): Promise<{ success: boolean;  accountId?: string; error?: string }> => {
   try {
     const existingUser = await getUserByEmail(email);
-    // console.log({existingUser})
+    console.log({existingUser})
 
     // User exists, send OTP
     if (existingUser) {

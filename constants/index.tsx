@@ -3,22 +3,26 @@ import React from 'react';
  
 export const fields = {
   heroBanner: ["id", "url","type","description","header", "cta","createdAt","createdBy"],
-  tours: [
-    "id",
-    "place",
-    "details",
-    "offers",
+  courses: [
+    "id",            // from Appwrite's document ID ($id)
+    "createdAt",     // from Appwrite's $createdAt
+    "updatedAt",     // from Appwrite's $updatedAt
+    "createdBy",     // likely a user relationship
+    "alias",
+    "title",
+    "description",
+    "status",
+    "section",
+    "chapters",
+    "reviews",
+    "feedbacks",
+    "objectives",
+    "imageUrl",
+    "createdBy",
     "price",
-    "currency",
-    "isFree",
-    "cover_img",
-    "gallery",
-    "package",
-    "type",
-    "rate",
-    "offer_limit",
-    "createdBy"
+    "permissions",
   ],
+
   feedback: [
      'id', 'name', 'socialMediaLink', 'testimony', 'imgUrl', 'title', 'email', 'rating','createdAt'
   ],

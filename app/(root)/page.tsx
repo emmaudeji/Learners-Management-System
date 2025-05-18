@@ -1,3 +1,4 @@
+import { getCurrentUser } from "@/lib/actions/user.actions";
 import Link from "next/link";
 
 // components/HeroSection.tsx
@@ -147,7 +148,8 @@ export const CallToAction = () => (
 // import { Testimonials } from '@/components/Testimonials';
 // import { CallToAction } from '@/components/CallToAction';
 
-export default function HomePage() {
+export default   function HomePage() {
+
   return (
     <>
       <HeroSection />

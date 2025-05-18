@@ -68,7 +68,7 @@ export interface PublicQueryParams {
 export const fetchPublicCollection = async <T extends Record<string, any>>(
   collectionId: string,
   params: PublicQueryParams = {},
-  fields?: string[],
+  fields: string[] = ["createdBy"],
   orderBy?: { attribute: string; order: "asc" | "desc" } // New order parameter
 ): Promise<{ data: T[]; tableSize: number; error: string | null }> => {
   try {
@@ -181,119 +181,122 @@ export const fetchPublicCollection = async <T extends Record<string, any>>(
   }
 };
 
+
+function structureDocument<T extends Record<string, any>>(
+  response: any,
+  fields?: string[]
+): T {
+  const result: Partial<T> = {};
+
+  // Always include these system fields
+  result["id" as keyof T] = response?.$id;
+  result["createdAt" as keyof T] = response?.$createdAt;
+  result["updatedAt" as keyof T] = response?.$updatedAt;
+
+  // Handle permissions cleanup
+  if (response?.$permissions) {
+    result["permissions" as keyof T] = response.$permissions.map((perm: string) =>
+      perm.split("(")[0]
+    ) as any;
+  }
+
+  // If fields are defined, selectively include
+  if (fields && fields.length > 0) {
+    for (const field of fields) {
+      if (field in response) {
+        if (field === "createdBy" && response.createdBy) {
+          result["createdBy" as keyof T] = {
+            id: response.createdBy.$id,
+            fullName: response.createdBy.fullName,
+          } as any;
+        } else {
+          result[field as keyof T] = response[field];
+        }
+      }
+    }
+  } else {
+    // Include all other top-level fields except Appwrite system fields
+    for (const key in response) {
+      if (
+        !["$id", "$createdAt", "$updatedAt", "$permissions", "$databaseId", "$collectionId"].includes(key)
+      ) {
+        result[key as keyof T] = response[key];
+      }
+    }
+  }
+
+  return result as T;
+}
+
 export const addDocument = async <T extends Record<string, any>>(
   collectionId: string,
   data: any,
-  fields: string[]
+  fields?: string[]  
 ): Promise<{ success: boolean; data?: T; error?: string }> => {
   try {
-    const res= await createSessionClient();
+    const client = await createSessionClient();
 
-    // console.log({res})
+    if (!client) {
+      return { success: false, error: "You are not authenticated" };
+    }
 
-    if(!res) return { success: false,  error: 'You are not authenticated' }
-
-    // Get response from database
-    const response = (await res?.databases.createDocument(
+    const response = await client.databases.createDocument(
       appwriteConfig.databaseId,
       collectionId,
       ID.unique(),
       data
-    )) as any; 
+    );
 
-    // console.log({ response });
+    const structuredData = structureDocument<T>(response, fields);
 
-    // Build structured data based on selected fields
-    const structuredData = fields.reduce((acc, field) => {
-      if (field in response) {
-        if (field === "createdBy" && response.createdBy) {
-          acc["createdBy" as keyof T] = {
-            id: response.createdBy.$id,
-            fullName: response.createdBy.fullName,
-          } as any; // `as any` ensures correct typing
-          // acc["id" as keyof T] = response.$id as any;
-        } else {
-          acc[field as keyof T] = response[field]; // ✅ Now TypeScript is happy
-        }
-      }
-      return acc;
-    }, {} as Partial<T>);
-
-    structuredData["id" as keyof T] = response.$id as any;
-    structuredData["createdAt" as keyof T] = response.$createdAt as any;
-    structuredData["updatedAt" as keyof T] = response.$updateddAt as any;
-
-    console.log({ structuredData});
-
-    return {
-      success: true,
-      data: structuredData as T, // Ensure the correct return type
-    };
+    return { success: true, data: structuredData };
   } catch (error: any) {
     console.error("Add Document Error:", {
-      message: error.message || "Unknown error",
-      stack: error.stack || "No stack trace",
-      status: error?.status || "Unknown status",
-      details: error?.details || "No additional details",
+      message: error.message,
+      stack: error.stack,
+      status: error?.status,
+      details: error?.details,
     });
-    return { success: false, error: error.message || "Failed to add document." };
+    return { success: false, error: "Failed to add document." };
   }
 };
+
 
 export const updateDocument = async <T extends Record<string, any>>(
   collectionId: string,
   documentId: string,
-  data: any,
-  fields?: string[]
+  data: Partial<T>,
+  fields?: string[] 
 ): Promise<{ success: boolean; data?: T; error?: string }> => {
   try {
     const { databases } = await createSessionClient();
-    // make sure createdAt is removed
-    const {createdAt, ...newData} = data
+    const { createdAt, ...cleanData } = data; // strip `createdAt` if exists
 
-    // Get response from database
-    const response = (await databases.updateDocument(
+    const response = await databases.updateDocument(
       appwriteConfig.databaseId,
       collectionId,
       documentId,
-      newData
-    )) as any;  
- 
-    // If specific fields are requested, return only those
-    const structuredData = fields
-      ? fields.reduce((acc, field) => {
-          if (field in response) {
-            if (field === "createdBy" && response.createdBy) {
-              acc["createdBy" as keyof T] = {
-                id: response.createdBy.$id,
-                fullName: response.createdBy.fullName,
-              } as any;
-              // acc["id" as keyof T] = response.$id as any;
-            } else {
-              acc[field as keyof T] = response[field];
-            }
-          }
-          return acc;
-        }, {} as Partial<T>)
-      : (response as T);
+      cleanData
+    );
 
-      structuredData["id" as keyof T] = response.$id as any;
-      structuredData["createdAt" as keyof T] = response.$createdAt as any;
-
-      // console.log({response, structuredData});
+    const structuredData = structureDocument<T>(response, fields);
 
     return {
       success: true,
-      data: structuredData as T, // Ensure correct return type
+      data: structuredData,
     };
   } catch (error: any) {
     console.error("Update Document Error:", {
-      message: error.message || "Unknown error",
-      stack: error.stack || "No stack trace",
-      status: error?.status || "Unknown status",
-      details: error?.details || "No additional details",
+      message: error.message,
+      stack: error.stack,
+      status: error?.status,
+      details: error?.details,
     });
-    return { success: false, error: error.message || "Failed to update document." };
+
+    return {
+      success: false,
+      error: error.message || "Failed to update document.",
+    };
   }
 };
 
@@ -319,88 +322,86 @@ export const deleteDocument = async (collectionId: string, documentId: string): 
   }
 };
 
+export const getDocumentById = async <T extends Record<string, any>>(
+  collectionId: string,
+  documentId: string,
+  fields?: string[]  
+): Promise<{ data: T | null; error: string | null }> => {
+  try {
+    const client = await createSessionClient();
+    const databases = client.databases;
+
+    const response = await databases.getDocument(
+      appwriteConfig.databaseId,
+      collectionId,
+      documentId
+    );
+
+    const data = structureDocument<T>(response, fields);
+    return { data, error: null };
+  } catch (error: any) {
+    console.error("Fetch Document By ID Error:", {
+      message: error.message,
+      stack: error.stack,
+      status: error?.status,
+      details: error?.details,
+    });
+
+    return { data: null, error: "Failed to fetch document" };
+  }
+};
+
 export interface QueryParams {
   search?: string | null;
   page?: number;
   [key: string]: any; // Allows dynamic filters based on collection fields
 }
 
-export const fetchCollectionData = async <T>(
+export const fetchCollectionData = async <T extends Record<string, any>>( 
   collectionId: string,
-  params: QueryParams,
-  fields?: string[],
-): Promise<{ data: T[]|any[]; tableSize: number; error: string | null }> => {
+  params: QueryParams = {},
+  fields: string[] = ["createdBy"]
+): Promise<{ data: T[]; tableSize: number; error: string | null }> => {
   try {
-    const client = createSessionClient()
-
-    const databases =  (await client).databases;
+    const client = createSessionClient();
+    const databases = (await client).databases;
     let queries: string[] = [];
 
-    // Validate keys from params against available fields
     const validKeys = Object.keys(params).filter((key) => fields?.includes(key));
 
-    // Search Filter (applies only to string fields)
     if (params.search) {
       const searchableFields = fields?.filter(
         (field) => typeof params[field] === "string"
       );
-
-      if (searchableFields&&searchableFields?.length > 0) {
-        queries.push(Query.or(searchableFields.map((field) => Query.search(field, params?.search!))));
+      if (searchableFields && searchableFields.length > 0) {
+        queries.push(Query.or(searchableFields.map((field) => Query.search(field, params.search!))));
       }
     }
 
-    // Apply filters only for valid fields
     validKeys.forEach((key) => {
       if (key !== "search" && key !== "page") {
         queries.push(Query.equal(key, params[key]));
       }
     });
 
-    // Pagination
-    const start = params.page ? Number(params.page)  - 1 : 0;
+    const start = params.page ? Number(params.page) - 1 : 0;
     const limit = start + (settings.COUNTLIMIT ?? 10);
     queries.push(Query.limit(limit));
     queries.push(Query.offset(start));
     queries.push(Query.orderAsc("$createdAt"));
 
-    // Fetch Data
     const response = await databases.listDocuments(
       appwriteConfig.databaseId,
       collectionId,
       queries
     );
 
-    // Process and structure the data
-    const structuredData: T[] = response.documents.map((doc: any) => {
-      const transformedDoc: Partial<T> = {};
+    const structuredData: T[] = response.documents.map((doc: any) =>
+      structureDocument<T>(doc, fields)
+    );
 
-      // Ensure "id" is explicitly set from "$id"
-      if (!fields || fields.includes("id")) {
-        transformedDoc["id" as keyof T] = doc.$id as any;
-        transformedDoc["createdAt" as keyof T] = doc.$createdAt as any;
-        transformedDoc["updatedAt" as keyof T] = doc.$updatedAt as any;
-      }
-
-      if (!fields) return { ...doc, id: doc?.$id } as T;
-
-      fields.forEach((field) => {
-        if (field === "createdBy" && doc.createdBy) {
-          transformedDoc["createdBy" as keyof T] = {
-            id: doc.createdBy.$id,
-            fullName: doc.createdBy.fullName,
-          } as any;
-        } else if (field in doc) {
-          transformedDoc[field as keyof T] = doc[field];
-        }
-      });
-
-      return transformedDoc as T;
-    });
-
-    // console.log({queries, structuredData})
     return {
-      data: fields ? structuredData : response.documents,
+      data: structuredData,
       tableSize: response.total,
       error: null,
     };
@@ -416,35 +417,6 @@ export const fetchCollectionData = async <T>(
   }
 };
 
-export interface DocumentResponse {
-  document: any | null;
-  error: string | null;
-}
-
-export const getDocumentById = async (
-  collectionId: string,
-  documentId: string
-): Promise<DocumentResponse> => {
-  try {
-    const client = await createSessionClient();
-    const databases = client.databases;
-
-    const document = await databases.getDocument(
-      appwriteConfig.databaseId,
-      collectionId,
-      documentId
-    );
-    return {document,error:null};
-  } catch (error:any) {
-    console.error("Fetch Document By ID Error:", {
-      message: error.message || "Unknown error",
-      stack: error.stack || "No stack trace",
-      status: error?.status || "Unknown status",
-      details: error?.details || "No additional details",
-    });
-    return {document:null,error:"Failed to fetch document"};
-  }
-}
 
 export const fetchData = async (collectionId:string) => {
   try {

@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface CustomInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
+  description?: string;
   error?: string;
   icon?: React.ReactNode;
   isTextArea?: boolean;
@@ -17,6 +18,7 @@ interface CustomInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const CustomInput: React.FC<CustomInputProps> = ({
   label,
+  description,
   error,
   icon,
   type = "text",
@@ -31,9 +33,12 @@ export const CustomInput: React.FC<CustomInputProps> = ({
   return (
     <div className={cn("flex flex-col gap-2 w-full",  wrapper)}>
       {label && (
-        <Label htmlFor={props.name} className="flex items-center gap-1">
-          {label} {required && <span className="text-red-500">*</span>}
-        </Label>
+        <div className="">
+          <Label htmlFor={props.name} className="flex items-center gap-1">
+            {label} {required && <span className="text-red-500">*</span>}
+          </Label>
+          {description && <small className="text-gray-500">{description}</small>}
+        </div>
       )}
       <div className="flex items-center pl-2 gap-2 border border-gray-300 rounded-md w-full">
         {isPassword ? (
