@@ -14,7 +14,7 @@ export default {
   			'xs': '440px'
   		},
   		fontFamily: {
-  			'poppins': ["var(--font-poppins)"]
+  			'lexend': ["var(--font-lexend)"]
   		},
   		colors: {
   			background: 'hsl(var(--background))',

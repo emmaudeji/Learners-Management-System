@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Lexend, Montserrat } from "next/font/google";
 import "./globals.css";
 import { AlertModal } from "@/components/common/AlertModal";
 import { Footer } from "@/components/common/Footer";
 import { Suspense } from "react";
+// import localFont from "next/font/local";
+import { lexendFontFamily } from "@/lib/utils";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// });
+
+const lexend = lexendFontFamily
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${montserrat.variable} font-montserrat antialiased`}
       >
         <Suspense>
           <AlertModal/>
