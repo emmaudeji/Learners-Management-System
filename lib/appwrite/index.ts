@@ -239,11 +239,12 @@ export const addDocument = async <T extends Record<string, any>>(
     if (!client) {
       return { success: false, error: "You are not authenticated" };
     }
+    console.log({data})
 
     const response = await client.databases.createDocument(
       appwriteConfig.databaseId,
       collectionId,
-      ID.unique(),
+      data.alias,
       data
     );
 
@@ -257,7 +258,7 @@ export const addDocument = async <T extends Record<string, any>>(
       status: error?.status,
       details: error?.details,
     });
-    return { success: false, error: "Failed to add document." };
+    return { success: false, error: error.message||"Failed to add document." };
   }
 };
 
@@ -300,7 +301,7 @@ export const updateDocument = async <T extends Record<string, any>>(
   }
 };
 
-export const deleteDocument = async (collectionId: string, documentId: string): Promise<{ success: boolean }> => {
+export const deleteDocument = async (collectionId: string, documentId: string): Promise<{ success: boolean, error?:string }> => {
   const { databases } = await createSessionClient();
 
   try {
@@ -318,7 +319,8 @@ export const deleteDocument = async (collectionId: string, documentId: string): 
       status: error?.status || "Unknown status",
       details: error?.details || "No additional details",
     });
-    return { success: false };
+    return { success: false, error: error.message||"Failed to add document." };
+
   }
 };
 
@@ -347,7 +349,7 @@ export const getDocumentById = async <T extends Record<string, any>>(
       details: error?.details,
     });
 
-    return { data: null, error: "Failed to fetch document" };
+    return {  data:null, error: error.message||"Failed to add document." };
   }
 };
 

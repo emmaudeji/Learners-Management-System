@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     // ✅ Parse and validate body
     const body = (await req.json()) as CreatePayload;
     const { collectionId, formData, fields } = body;
-
+console.log('CREATE',{ collectionId, formData, fields })
     if (!collectionId || !formData) {
       return NextResponse.json(
         { error: "Missing required fields: collectionId and formData" },

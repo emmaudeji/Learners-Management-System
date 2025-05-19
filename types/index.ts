@@ -57,15 +57,15 @@ export type Course = {
 
   title: string;
   description: string;
-  section: Section[]; // assuming relationship returns the related document ID
-  chapters: Chapter[]; // assuming multiple chapter IDs
-   // assuming multiple chapter IDs
-  reviews: string[]; // assuming multiple review IDs
-  feedbacks: string[]; // assuming multiple feedback IDs
+  sections: Section[];  
+  
+   
+  reviews: string[]; 
+  feedbacks: string[];  
   objectives: string[];
-  imageUrl: string; // assuming this is a URL string
-  user: string; // user ID
-  price: Pricing; // price ID
+  imageUrl: string;  
+  user: string;  
+  price: Pricing;  
 
   id: string;
   status: StatusType;
@@ -83,21 +83,36 @@ export type Section = {
 
   id: string;
   status: StatusType;
-  createdBy: CreatedBy,
-  createdAt: string;
-  updatedAt: string;
-  permissions: string[];
+  createdBy?: CreatedBy,
+  createdAt?: string;
+  updatedAt?: string;
+  permissions?: string[];
+};
+
+export type SectionInput = {
+  alias: string;
+  label: string;
+  course: string; // ID of the related course
+  status: StatusType;
+
+  chapters?: Chapter[]; // Array of chapter IDs
+
+  id?: string;
+  createdBy?: CreatedBy|string,
+  createdAt?: string;
+  updatedAt?: string;
+  permissions?: string[];
 };
 
 export type Chapter = {
   alias: string;
   label: string;
-  section: string; // ID or object reference to the Section (depending on your implementation)
+  section: string; // ID or object reference to the Section  
   course: string; // ID or object reference to the Course
   content: string;
-  videoUrl: string; // Assuming it's a valid URL string
-  imageUrl: string; // Assuming it's a valid URL string
-  feedbacks: string[]; // Array of IDs or feedback objects
+  videoUrl: string;  
+  imageUrl: string; 
+  feedbacks: string[];  
   
   id: string;
   status: StatusType;
