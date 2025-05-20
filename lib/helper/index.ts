@@ -1,3 +1,5 @@
+import { useUserStore } from "@/store/useUserStore";
+
 export const generateSlug = (name: string, length: number = 4): string => {
   const maxSlugLength = 50 - (length + 1); // 1 for the hyphen
 
@@ -17,3 +19,8 @@ export const generateSlug = (name: string, length: number = 4): string => {
 
   return `${baseSlug}-${hash}`;
 };
+
+export const getUrl = (path:string, id?:string) => {
+  const {user} = useUserStore()
+  return `/t/${id || user?.id}/${path}`
+}

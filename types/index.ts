@@ -68,6 +68,7 @@ export type Course = {
   price: Pricing;  
 
   id: string;
+  $id?: string;
   status: StatusType;
   createdBy: CreatedBy,
   createdAt: string;
@@ -81,6 +82,7 @@ export type Section = {
   course: string; // ID of the related course
   chapters: Chapter[]; // Array of chapter IDs
 
+  $id?: string;
   id: string;
   status: StatusType;
   createdBy?: CreatedBy,
@@ -97,6 +99,7 @@ export type SectionInput = {
 
   chapters?: Chapter[]; // Array of chapter IDs
 
+  $id?: string;
   id?: string;
   createdBy?: CreatedBy|string,
   createdAt?: string;
@@ -114,6 +117,7 @@ export type Chapter = {
   imageUrl: string; 
   feedbacks: string[];  
   
+  $id?: string;
   id: string;
   status: StatusType;
   createdBy: CreatedBy,
@@ -127,6 +131,7 @@ export type Pricing = {
   currency: string;
   course: string; // course ID
 
+  $id?: string;
   id: string;
   createdBy: CreatedBy,
   status: StatusType;

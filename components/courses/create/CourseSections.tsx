@@ -85,8 +85,8 @@ console.log({course})
     const [overType] = String(over.id).split('-');
 
     if (activeType === 'section' && overType === 'section') {
-      const oldIndex = sections.findIndex((s) => `section-${s.id}` === active.id);
-      const newIndex = sections.findIndex((s) => `section-${s.id}` === over.id);
+      const oldIndex = sections.findIndex((s) => `section-${s.alias}` === active.id);
+      const newIndex = sections.findIndex((s) => `section-${s.alias}` === over.id);
       if (oldIndex !== -1 && newIndex !== -1) {
         setSections(arrayMove(sections, oldIndex, newIndex));
         setHasChanges(true);
@@ -99,13 +99,13 @@ console.log({course})
       let chapterToMove: Chapter | null = null;
 
       sections.forEach((section, sIndex) => {
-        const cIndex = section.chapters.findIndex((c) => `chapter-${c.id}` === active.id);
+        const cIndex = section.chapters.findIndex((c) => `chapter-${c.alias}` === active.id);
         if (cIndex > -1) {
           sourceSectionIndex = sIndex;
           chapterToMove = section.chapters[cIndex];
         }
 
-        if (section.chapters.some((c) => `chapter-${c.id}` === over.id)) {
+        if (section.chapters.some((c) => `chapter-${c.alias}` === over.id)) {
           targetSectionIndex = sIndex;
         }
       });
@@ -113,11 +113,11 @@ console.log({course})
       if (chapterToMove && sourceSectionIndex !== -1 && targetSectionIndex !== -1) {
         const newSections = [...sections];
         newSections[sourceSectionIndex].chapters = newSections[sourceSectionIndex].chapters.filter(
-          (c) => `chapter-${c.id}` !== active.id
+          (c) => `chapter-${c.alias}` !== active.id
         );
 
         const targetChapters = [...newSections[targetSectionIndex].chapters];
-        const targetIndex = targetChapters.findIndex((c) => `chapter-${c.id}` === over.id);
+        const targetIndex = targetChapters.findIndex((c) => `chapter-${c.alias}` === over.id);
         targetChapters.splice(targetIndex, 0, chapterToMove);
         newSections[targetSectionIndex].chapters = targetChapters;
 
@@ -130,11 +130,12 @@ console.log({course})
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNewTitle(value);
-    if (error && value.length >= MIN_SECTION_LENGTH) {
-      setError('');
-    } else if (value.length < MIN_SECTION_LENGTH) {
       setError('Title must be at least 5 characters.');
-    }
+    // if (error && value.length >= MIN_SECTION_LENGTH) {
+    //   setError('');
+    // } else if (value.length < MIN_SECTION_LENGTH) {
+    //   setError('Title must be at least 5 characters.');
+    // }
   };
 // console.log({data,error})
 
@@ -187,13 +188,13 @@ console.log({data,error})
     setLoading(true)
 
     const updated = sections.map((s) =>
-      s.id === id ? { ...s, label } : s
+      s.$id === id ? { ...s, label } : s
     );
     setSections(updated);
 
     const {data,error} = await putRequest({
       body:{
-        collectionId:appwriteConfig.coursesCollectionId,
+        collectionId:appwriteConfig.sectionsCollectionId,
         documentId:id,
         formData: {label, status}
       }
@@ -210,7 +211,6 @@ console.log({data,error})
   };
 
   const handleSave = async () => {
-
     try {
       setSaving(true)
       console.log('Saving order...', sections);
@@ -228,9 +228,10 @@ console.log({data,error})
       setSaving(false)
     }
   };
+
 // console.log({sections})
   return (
-    <section className="p-4 bg-slate-100 border rounded-md space-y-3">
+    <section className="p-4 bg-slate-50 border rounded-md space-y-3">
       <div className="space-y- ">
         <p className="font-semibold">Sections</p>
         <small className="text-gray-700">
@@ -247,24 +248,24 @@ console.log({data,error})
       <div className=" space-y-2 ">
         {
           sections.length > 0 ?
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext
-            items={sections.map((s) => `section-${s.id}`)}
-            strategy={verticalListSortingStrategy}
-          >
-            {sections.map((section, index) => (
-              <SectionItem
-                key={section.alias}
-                section={section}
-                course={course}
-                index={index}
-                onUpdateLabel={handleUpdateLabel}
-              />
-            ))}
-          </SortableContext>
-        </DndContext>
-        :
-        <p className="flex justify-self-center items-self-center text-center w-60 p-6 text-gray-600">Empty list. Start adding sections</p>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={sections.map((s) => `section-${s.alias}`)}
+              strategy={verticalListSortingStrategy}
+            >
+              {sections.map((section, index) => (
+                <SectionItem
+                  key={section.alias}
+                  section={section}
+                  course={course}
+                  index={index}
+                  onUpdateLabel={handleUpdateLabel}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+            :
+          <p className="flex justify-self-center items-self-center text-center w-80 p-6 text-gray-600">Empty list. Start adding sections</p>
         }
       </div>
 
@@ -333,7 +334,7 @@ export default function SectionItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: `section-${section.id}` });
+  } = useSortable({ id: `section-${section.alias}` });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -360,7 +361,7 @@ export default function SectionItem({
       }
       try {
         setSaving(true)
-        onUpdateLabel(section.id, sectionTitle.trim(), section.status);
+        onUpdateLabel(section.$id!, sectionTitle.trim(), section.status);
         setEditing(false);
         setError('');
           
@@ -376,11 +377,12 @@ export default function SectionItem({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setChapterTitle(value);
-    if (error && value.length >= MIN_SECTION_LENGTH) {
-      setError('');
-    } else if (value.length < MIN_SECTION_LENGTH) {
       setError('Title must be at least 5 characters.');
-    }
+    // if (error && value.length >= MIN_SECTION_LENGTH) {
+    //   setError('');
+    // } else if (value.length < MIN_SECTION_LENGTH) {
+    //   setError('Title must be at least 5 characters.');
+    // }
   };
 
   const handleAddChapter = async () => {
@@ -397,7 +399,8 @@ export default function SectionItem({
     const formData = {
       alias: generateSlug(chapterTitle),
       label,
-      section: course.id,
+      section: section.$id,
+      course: course.id,
       status: 'ACTIVE',
       createdBy: user?.id,
     };
@@ -434,11 +437,11 @@ export default function SectionItem({
       {...attributes}
       
       className={clsx(
-        'p-3 bg-white border rounded-md shadow-sm transition',
-        isDragging && 'bg-slate-100 shadow-lg'
+        'p-3 bg-white border rounded-md transition',
+        isDragging && 'bg-slate-50 shadow-lg'
       )}
     >
-      <div className="flex items-center justify-between gap-2 ">
+      <div className="flex items-center capitalize justify-between gap-2 ">
 
         <LayoutGrid {...listeners} className='cursor-grab text-gray-300 hover:text-gray-500'/>
 
@@ -460,13 +463,13 @@ export default function SectionItem({
           </div>
         ) : (
           <>
-            <span className="truncate text-sm w-full font-medium">
+            <span className="truncate w-full font-bold text-sm">
               {index + 1}. {section.label}
             </span>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <small className="rounded-full py- px-3 border">{section.status || 'DRAFT'}</small>
-              <Pen className="w-4 h-4 cursor-pointer" onClick={() => setEditing(true)} />
+              <Pen size={14} className="cursor-pointer" onClick={() => setEditing(true)} />
               
               <ChevronDown
                 size={20}
@@ -482,10 +485,10 @@ export default function SectionItem({
         <>
           {chapters &&  chapters?.length > 0 ? (
             <div className="mt-2 border-t pt-2">
-              <CourseChapters section={section} />
+              <CourseChapters chapters={chapters} course={course} />
             </div>
           ) : (
-            <div className="border-t mt-2 pt-2 text-center text-sm text-gray-500">
+            <div className="border-t my-2 pt-2 text-center text-sm text-gray-500">
               Empty list. Start adding chapters
             </div>
           )}
@@ -493,14 +496,14 @@ export default function SectionItem({
             {
               showInput ? (
               <div className="flex items-center gap-2 pt-2 w-full">
-                <Input
+                <CustomInput
                   disabled={loading}
                   placeholder="New chapter title"
                   value={chapterTitle}
-                  onChange={(e) => setChapterTitle(e.target.value)}
-                  // onChange={handleChange}
-                  // error={error}
-                  className='bg-white h-8'
+                  // onChange={(e) => setChapterTitle(e.target.value)}
+                  onChange={handleChange}
+                  error={error}
+                  className='bg-white h-'
                 />
                 <CustomButton size="sm" variant="outline" disabled={saving} isLoading={loading} loadingText='Add' onClick={handleAddChapter}>
                   Add
