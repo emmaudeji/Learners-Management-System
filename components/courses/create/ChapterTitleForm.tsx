@@ -60,7 +60,7 @@ const ChapterTitleForm = ({ chapter }: { chapter: Chapter }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-slate-100 rounded-md border space-y-4">
+    <form onSubmit={handleSubmit} className="p-4 bg-slate-50 rounded-md border space-y-4">
       <CustomInput
         label="Course Title"
         description="Make it short, clear, and enticing. This will be the first impression learners get."

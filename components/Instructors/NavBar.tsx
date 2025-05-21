@@ -32,7 +32,7 @@ export default function InstructorNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="w-full lg:w-64 border-r min-h-screen bg-white p-4 max-md:hidden ">
+    <nav className="w-full lg:w-64 border-r min-h-[90vh] bg-white p-4 max-md:hidden ">
       <h2 className="text-xl font-semibold mb-6 px-2">Instructor Panel</h2>
       <ul className="space-y-1">
         {navItems.map((item) => {

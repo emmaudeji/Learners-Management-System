@@ -182,3 +182,91 @@ h6 {
   }
 }
  
+/* ========== Rich Text Editor (Quill) Styles ========== */
+
+.quill {
+  width: 100%;
+}
+
+.quill .ql-editor {
+  height: 100%;
+  font-size: 18px;
+  line-height: 1.6;
+  overflow-y: auto;
+  min-height: 200px;
+}
+
+.quill .ql-editor.ql-blank::before {
+  color: rgba(0, 0, 0, 0.6);
+  content: attr(data-placeholder);
+  font-size: 14px;
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  pointer-events: none;
+}
+
+/* Paragraph and heading spacing */
+.ql-editor p,
+.ql-editor ul,
+.ql-editor ol,
+.ql-editor h1,
+.ql-editor h2,
+.ql-editor h3,
+.ql-editor h4,
+.ql-editor h5,
+.ql-editor h6 {
+  margin-bottom: 1rem;
+}
+
+/* Blockquote styling */
+.ql-editor blockquote {
+  margin-bottom: 1.5rem;
+  padding-left: 10px;
+  border-left: 3px solid #ccc;
+}
+
+/* Editor container (input area) */
+.ql-container.ql-snow {
+  border: 1px solid #f3f3f3 !important;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  font-size: 14px;
+  max-height: 500px;
+  min-height: 150px;
+  overflow-y: auto;
+}
+
+/* Toolbar (header area) */
+.ql-toolbar.ql-snow {
+  border: 1px solid #f3f3f3 !important;
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(to right, #d2d2d119 0%, #868d8d19 100%);
+}
+
+/* Highlight editor input border */
+.ql-container.ql-snow .ql-editor {
+  border: 1px solid #001fcc19 !important;
+}
+
+
+/* Inside your global CSS (e.g., app/globals.css or styles/globals.css) */
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value='arial']::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value='arial']::before {
+  content: 'Arial';
+  font-family: 'Arial, sans-serif';
+}
+.ql-font-arial {
+  font-family: 'Arial, sans-serif';
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value='roboto']::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value='roboto']::before {
+  content: 'Roboto';
+  font-family: 'Roboto, sans-serif';
+}
+.ql-font-roboto {
+  font-family: 'Roboto, sans-serif';
+}
+
+/* Repeat for each font you added... */

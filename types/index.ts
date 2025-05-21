@@ -3,6 +3,7 @@ export type StatusType = 'DRAFT'|'ACTIVE'|'ARCHIVED'
 export type RoleType = "SUPERADMIN" | "ADMIN" | "USER" | "AUTHOR" | "TEACHER";
 
 export type User = {
+  $id?: string;
   id: string;
   email: string;
   userId: string;
