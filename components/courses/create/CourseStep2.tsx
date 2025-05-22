@@ -21,6 +21,7 @@ import CoverImageForm from './CoverImageForm'
 import { CourseChapters } from './CourseChapters'
 import PriceForm from './PriceForm'
 import { CourseSections } from './CourseSections'
+import { CourseObjectivesForm } from './CourseObj'
 
 const CourseStep2 = ({course}:{
   course:Course
@@ -110,6 +111,7 @@ const CourseStep2 = ({course}:{
           <Heading title='Customize your course' icon={<LayoutGrid/>} />
           <TitleForm course={course} />
           <DescriptionForm course={course} />
+          <CourseObjectivesForm course={course}/>
           <CoverImageForm course={course}  />
 
          </div>

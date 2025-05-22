@@ -31,7 +31,7 @@ export const CustomInput: React.FC<CustomInputProps> = ({
   const isPassword = type === "password";
 
   return (
-    <div className={cn("flex flex-col gap-2 w-full",  wrapper)}>
+    <div className={cn("flex  flex-col gap-2 w-full",  wrapper)}>
       {label && (
         <div className="">
           <Label htmlFor={props.name} className="flex items-center gap-1">
@@ -40,7 +40,7 @@ export const CustomInput: React.FC<CustomInputProps> = ({
           {description && <small className="text-gray-500">{description}</small>}
         </div>
       )}
-      <div className="flex items-center pl-2 gap-2 border border-gray-300 rounded-md w-full">
+      <div className="flex items-center bg-white pl-2 gap-2 border border-gray-300 rounded-md w-full">
         {isPassword ? (
           <button
             type="button"
