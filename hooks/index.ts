@@ -12,10 +12,10 @@ export const useChapters = ({chapter}:{chapter:Chapter}) => {
             body:{
                 collectionId:appwriteConfig.coursesCollectionId,
                 fields:fields.courses,
-                documentId:chapter.course.$id
+                // documentId:chapter.course.$id
             }
         })
-        console.log({data,error})
+        // console.log({data,error})
     }
     useEffect(() => {
       fetchCourse()
