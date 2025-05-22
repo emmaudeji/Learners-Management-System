@@ -117,6 +117,7 @@ export type Chapter = {
   videoUrl: string;  
   imageUrl: string; 
   feedbacks: string[];  
+  attachments?: string[];  
   
   $id?: string;
   id: string;
@@ -140,3 +141,62 @@ export type Pricing = {
   updatedAt: string;
   permissions: string[];
 };
+
+
+export type QuizQuestion = {
+  id: string;
+  alias: string;
+  chapter: Chapter; // relationship to 'chapters' table
+  question: string;
+  position: number;
+  type: 'multiple-choice' | 'true-false' | 'short-answer'; // enum
+  options: string[]; // for MCQs
+  explanation: string | null;
+  difficulty: 'easy' | 'medium' | 'hard'; // enum
+  tags: string[];
+  correctAnswer: string[]; // supports multiple correct answers
+
+  $id?: string;
+  createdBy?: CreatedBy,  // relationship to 'users' table
+  status?: StatusType;
+  createdAt?: string;
+  $createdAt?: string;
+  updatedAt?: string;
+  permissions?: string[];
+};
+
+
+export type QuizAnswer = {
+  id: string;
+  alias: string;
+  quiz: QuizQuestion; // relationship to quizes table
+  selectedAnswer: string[]; // supports multiple selected options
+  isCorrect: boolean;
+  timestamp: string; // ISO datetime
+
+  $id?: string;
+  createdBy: CreatedBy,  // relationship to 'users' table
+  status: StatusType;
+  createdAt: string;
+  $createdAt: string;
+  updatedAt: string;
+  permissions: string[];
+};
+ 
+export type Attachment = {
+  url: string
+  alias: string
+  type: string
+  tableAlias?: string
+  name?: string
+  security?: string
+
+  id?: string;
+  $id?: string;
+  createdBy?: CreatedBy,  // relationship to 'users' table
+  status?: StatusType;
+  createdAt?: string;
+  $createdAt?: string;
+  updatedAt?: string;
+  permissions?: string[];
+}

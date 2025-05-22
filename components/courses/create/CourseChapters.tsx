@@ -67,4 +67,3 @@ export const CourseChapters = ({ chapters, course }: { chapters: Chapter[], cour
 
 
 
-

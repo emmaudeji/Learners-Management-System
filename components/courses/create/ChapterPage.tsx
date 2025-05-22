@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import React, { Dispatch, SetStateAction, Suspense, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
 import { Chapter, Section } from '@/types'
@@ -17,114 +17,47 @@ import { ChevronLeftCircle, ChevronRightCircle, Menu } from 'lucide-react'
 const MIN_CONTENT_LENGTH = 20
 
 const ChapterContentForm = ({ chapter }: { chapter: Chapter }) => {
-  const [form, setForm] = useState({
-    label: chapter.label || '',
-    content: chapter.content || '',
-  })
-
-  const [errors, setErrors] = useState<{ [key: string]: string }>({})
-//   const [isEdit, setIsEdit] = useState(!chapter.content?.length)
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleChange = (field: keyof typeof form, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }))
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: '' }))
-    }
-  }
-
-  const validateForm = () => {
-    const newErrors: typeof errors = {}
-
-    if (!form.label.trim()) newErrors.label = 'Title is required.'
-    if (form.content.trim().length < MIN_CONTENT_LENGTH)
-      newErrors.content = 'Content must be at least 20 characters.'
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validateForm()) return
-
-    setIsLoading(true)
-
-    try {
-      const { error } = await putRequest({
-        body: {
-          collectionId: appwriteConfig.chaptersCollectionId,
-          documentId: chapter.id,
-          formData: form,
-        },
-      })
-
-      if (error) {
-        toast.error(error || 'Failed to update chapter.')
-        return
-      }
-
-      toast.success('Chapter updated successfully!')
-    } catch {
-      toast.error('Something went wrong. Please try again.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+   
+  const [type, setType] = useState<"content" | "quizes" | "attachments">('content') // "content" | "quizes" | "attachments"
 
   return (
-    <form onSubmit={handleSubmit} className="w-full py-10 mx-auto max-w-4xl ">
-        <div className="flex justify-end">
-            <CustomButton
-            isLoading={isLoading}
-            loadingText="Saving..."
-            type="submit"
-            // variant="outline"
-            disabled={isLoading}
-            className='bg-black'
-            >
-            Save
-            </CustomButton>
+    <section  className="w-full py-10 mx-auto max-w-4xl ">
+        <div className="flex justify-end gap-2 items-center w-full pb-4 border-b mb-4 flex-wrap">
+            <Button type='button' onClick={()=>setType("content")} variant={'ghost'} className={` hover:bg-gray-100 ${type==="content" ? 'bg-green-100':''} `}>Content</Button>
+            /
+            <Button type='button' onClick={()=>setType("quizes")} variant={'ghost'} className={` hover:bg-gray-100 ${type==="quizes" ? 'bg-green-100':''} `}>Quizes</Button>
+            /
+            <Button type='button' onClick={()=>setType("attachments")} variant={'ghost'} className={` hover:bg-gray-100 ${type==="attachments" ? 'bg-green-100':''} `}>Attachments</Button>
         </div>
 
-        <div className="space-y-6">
-            {/* Chapter Title */}
-            <div className="space-y-2">
-                <Label htmlFor="label" className="text-lg font-semibold">
-                Chapter Title
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                Make it clear and captivating. This will be the first impression learners get.
-                </p>
-                <CustomInput
-                id="label"
-                value={form.label}
-                error={errors.label}
-                disabled={isLoading}
-                onChange={(e) => handleChange('label', e.target.value)}
-                name="label"
-                wrapper="max-w-xl"
-                />
-            </div>
+        <div className="space-y-8">
+            <ChapterTitleForm chapter={chapter} type='chapter' />
 
-            {/* Chapter Content */}
-            <div className="space-y-2">
-                <Label htmlFor="content" className="text-lg font-semibold">
-                Chapter Content
-                </Label>
-                <RichTextEditor
-                    value={form.content}
-                    onChange={(val) => handleChange('content', val)}
-                    className={errors.content ? 'border border-red-500' : ''}
-                    disabled={isLoading}
-                />
-                {errors.content && <p className="text-sm text-red-600 mt-1">{errors.content}</p>}
+             {
+              type==="content" ? 
+               <ContentEditor chapter={chapter}/>
+              :
+              type==="quizes" ? 
+              <div className="space-y-2">
+                <div className="">
+                  <Label htmlFor="content" className="text-lg font-semibold">
+                    Chapter Quize
+                  </Label>
+                  <p className="text-gray-600">Add a new question or update existing one.</p>
+                </div>
+
+                 <ChapterQuizeWrapper chapter={chapter} />
             </div>
+              :
+              type==="attachments" ? 
+              <ChapterAttachments chapter={chapter}/>
+              : null
+             }
         </div>
       {/* Placeholder for future extensibility */}
       {/* <AttachmentsForm chapterId={chapter.id} /> */}
       {/* <ChapterResourcesForm /> */}
-    </form>
+    </section>
   )
 }
 
@@ -134,6 +67,12 @@ export default ChapterContentForm
  
 import clsx from 'clsx'
 import { useChapters } from '@/hooks'
+import { Button } from '@/components/ui/button'
+import ChapterQuizForm from './ChapterQuizForm'
+import ContentEditor from './ContentEditor'
+import ChapterTitleForm from './ChapterTitleForm'
+import ChapterQuizeWrapper from './ChapterQuizeWrapper'
+import ChapterAttachments from './ChapterAttachments'
 
 export const ChapterWrapper = ({ chapter, }: { chapter: Chapter,  }) => {
   const [slideOut, setSlideOut] = useState(true)

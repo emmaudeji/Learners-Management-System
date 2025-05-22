@@ -15,6 +15,10 @@ export const appwriteConfig = {
   reviewsCollectionId: process.env.NEXT_PUBLIC_APPWRITE_REVIEWS_ID as string,
   feedbacksCollectionId: process.env.NEXT_PUBLIC_APPWRITE_FEEDBACKS_ID as string,
   progressCollectionId: process.env.NEXT_PUBLIC_APPWRITE_PROGRESS_ID as string,
+  attachmentsCollectionId: process.env.NEXT_PUBLIC_APPWRITE_ATTACHMENTS as string,
+
+  quizesCollectionId: process.env.NEXT_PUBLIC_APPWRITE_QUIZES as string,
+  answersCollectionId: process.env.NEXT_PUBLIC_APPWRITE_ANSWERS as string,
 
   secretKey: process.env.APPWRITE_SECRETE_KEY as string,
 };

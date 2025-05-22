@@ -14,6 +14,7 @@ const CoueseSlug = async ({params}:{
     // console.log( {data,error} )
     if(!data){ 
         const user = await getCurrentUser()
+        if(!user) redirect(`/auth?q=sign-in`)
         redirect(`/t/${user?.id}/my-courses`)
     }
   return (

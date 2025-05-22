@@ -178,7 +178,7 @@
     @apply  sm:text-xl font-bold 
   }
 h6 {
-    @apply  sm:text-lg font-bold 
+    @apply  sm:text-lg font-semibold 
   }
 }
  
