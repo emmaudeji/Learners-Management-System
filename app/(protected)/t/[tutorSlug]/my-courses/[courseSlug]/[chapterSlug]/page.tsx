@@ -3,7 +3,7 @@ import { getDocumentById } from '@/lib/appwrite'
 import { getCurrentUser } from '@/lib/actions/user.actions'
 import { appwriteConfig } from '@/lib/actions/config'
 import { Chapter } from '@/types'
-import { ChapterWrapper } from '@/components/courses/create/ChapterPage'
+import { ChapterWrapper } from '@/components/courses/create/ChapterWrapper'
 
 const CourseSlugPage = async ({
   params,
@@ -18,7 +18,10 @@ const CourseSlugPage = async ({
 // console.log({data})
   if (!data) {
     const user = await getCurrentUser()
-    redirect(`/t/${user?.id}/my-courses`)
+    if(user){
+      redirect(`/t/${user?.id}/my-courses`)
+    }
+    redirect(`/auth?q=sign-in`)
   }
 
   return (

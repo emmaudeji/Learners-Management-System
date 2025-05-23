@@ -80,6 +80,10 @@ export default {
   					height: '0'
   				}
   			},
+			'fade-slide': {
+				'0%': { opacity: '0', transform: 'translateY(20px)' },
+				'100%': { opacity: '1', transform: 'translateY(0)' },
+				},
 			'float-in-right': {
 				'0%': { transform: 'translateX(-10%)', opacity: '0' },
 				'100%': { transform: 'translateX(0)', opacity: '1' },
@@ -108,6 +112,8 @@ export default {
 			'zigzag': "zigzag 8s ease-in-out infinite",
 			'bounce-slow': "bounce 5s infinite",
 			'spin-slow': "spin 10s linear infinite",
+			'fade-slide': 'fade-slide 0.4s ease-out',
+
   		}
   	}
   },

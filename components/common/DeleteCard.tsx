@@ -49,8 +49,7 @@ export default function DeleteCard({ text, onDelete, onCancel, trigger }: Confir
         {
             text ?
             <>
-            Are you sure you want to delete <span className="font-medium">{text}</span>? 
-            <p>This action cannot be undone.</p>
+            {text}
             </> 
             :
             <>Are you sure you want to delete the item? <p>This action cannot be undone.</p></>

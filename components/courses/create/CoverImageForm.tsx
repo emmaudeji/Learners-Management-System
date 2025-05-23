@@ -75,7 +75,7 @@ const CoverImageForm = ({ course }: { course: Course }) => {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full">
             <div className="">
             <p className="font-semibold">Cover Image</p>
             <small className="text-gray-500">This is the course preview image. Choose a quality image that aligns well with the course title.</small>

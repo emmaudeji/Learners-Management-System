@@ -5,8 +5,13 @@ import { Chapter, Course, Section } from "@/types";
 import { Grid, LayoutGrid, PenLine } from "lucide-react";
 import Link from "next/link";
 import { getUrl } from "@/lib/helper";
+import { Dispatch, SetStateAction } from "react";
+import { TextButton } from "@/components/shared/CustomButton";
 
-const ChapterItem = ({ chapter, index, course }: { chapter: Chapter; index: number, course:Course }) => {
+const ChapterItem = ({ chapter, index, course , setChapter, setCurrentStepIndex}: { chapter: Chapter; index: number, course:Course,
+    setChapter:Dispatch<SetStateAction<Chapter>>
+    setCurrentStepIndex:Dispatch<SetStateAction<number>>
+ }) => {
   const {
     attributes,
     listeners,
@@ -36,16 +41,20 @@ const ChapterItem = ({ chapter, index, course }: { chapter: Chapter; index: numb
 
         <span className="text-sm capitalize font- w-full">{index + 1}. {chapter.label}</span>
         <div className="flex">
-          <Link href={getUrl(`my-courses/${course.id}/${chapter.$id}`)} className="flex gap- items-center text-primary hover:underline duration-300 text-xs">
-            Edit
-            <PenLine size={14} className="text-gray-500 hover:text-gray-700 duration-300 cursor-pointer"/>
-          </Link>
+          <TextButton editType="edit" onClick={()=>{
+            setChapter(chapter)
+            setCurrentStepIndex(2)
+          }}/>
         </div>
     </div>
   );
 };
 
-export const CourseChapters = ({ chapters, course }: { chapters: Chapter[], course:Course }) => {
+export const CourseChapters = ({ chapters, course, setChapter, setCurrentStepIndex}: { chapters: Chapter[], course:Course,
+    setChapter:Dispatch<SetStateAction<Chapter>>
+    setCurrentStepIndex:Dispatch<SetStateAction<number>>
+    
+ }) => {
   return (
     <SortableContext
       items={chapters?.map((c) => `chapter-${c.alias}`)}
@@ -53,7 +62,7 @@ export const CourseChapters = ({ chapters, course }: { chapters: Chapter[], cour
     >
       <div className="space-y-2">
         {chapters?.map((chapter, index) => (
-          <ChapterItem key={chapter.alias} chapter={chapter} index={index} course={course} />
+          <ChapterItem key={chapter.alias} chapter={chapter} index={index} course={course} setChapter={setChapter} setCurrentStepIndex={setCurrentStepIndex} />
         ))}
       </div>
     </SortableContext>

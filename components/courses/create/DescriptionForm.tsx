@@ -66,7 +66,7 @@ const DescriptionForm = ({ course }: { course: Course }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-slate-100 rounded-md border space-y-4">
+    <form onSubmit={handleSubmit} className="p-4 w-full bg-slate-50 rounded-md border space-y-4">
       <CustomInput
         label="Course Description"
         description="Write a structured overview. Use keywords that improve SEO and attract the right audience."
@@ -74,6 +74,7 @@ const DescriptionForm = ({ course }: { course: Course }) => {
         error={error}
         disabled={!isEdit || isLoading}
         onChange={handleChange}
+        isTextArea
       />
 
       <div className="flex items-center justify-between">

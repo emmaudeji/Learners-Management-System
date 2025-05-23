@@ -86,12 +86,12 @@ const PriceForm = ({ course }: { course: Course }) => {
     price !== initialPrice.toString() || currency !== initialCurrency;
 
   return (
-    <section className="space-y-3">
+    <section className="space-y-3 max-w-4xl mx-auto w-full pt-8 pb-20 flex flex-col items-center gap-6">
         <Heading icon={<DollarSign/>} title="Sell your course" />
 
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-slate-100 rounded-md border space-y-4   gap-4"
+      className="p-4 bg-slate-50 rounded-md border space-y-4  w-full max-w-2xl gap-4"
     >
       <CustomInput
         label="Course Price"

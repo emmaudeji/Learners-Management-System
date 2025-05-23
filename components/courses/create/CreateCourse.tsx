@@ -2,28 +2,23 @@
 // creating new course stage 1 
 
 import { useState } from 'react'
+import { CustomInput } from '@/components/shared/CustomInput'
+import { Button } from '@/components/ui/button'
 import { toast } from 'react-toastify'
+import { CustomButton } from '@/components/shared/CustomButton'
 import { postRequest } from '@/utils/api'
 import { appwriteConfig } from '@/lib/actions/config'
 import { fields } from '@/constants'
 import { generateSlug } from '@/lib/helper'
+import { useParams, useRouter } from 'next/navigation'
 import { Course } from '@/types'
-import { Button } from '@/components/ui/button'
-import { LayoutGrid, LayoutList, Trash2 } from 'lucide-react'
-import DeleteCard from '@/components/common/DeleteCard'
-import { Card } from '@/components/ui/card'
-import Heading from '@/components/common/Heading'
-import TitleForm from './TitleForm'
-import DescriptionForm from './DescriptionForm'
-import CoverImageForm from './CoverImageForm'
-import { CourseChapters } from './CourseChapters'
-import PriceForm from './PriceForm'
-import { CourseSections } from './CourseSections'
-import { CourseObjectivesForm } from './CourseObj'
+import { useUserStore } from '@/store/useUserStore'
 
-const CourseStep2 = ({course}:{
-  course:Course
-}) => {
+const CreateCourse = ( ) => {
+   const {push} = useRouter()
+   const {user} = useUserStore()
+ 
+    
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -68,7 +63,8 @@ const CourseStep2 = ({course}:{
           collectionId: appwriteConfig.coursesCollectionId,
           formData: {
             ...form,
-            alias: generateSlug(form.title)
+            alias: generateSlug(form.title),
+            createdBy: user?.id,
           },
           fields: fields.courses,
         }
@@ -80,6 +76,7 @@ const CourseStep2 = ({course}:{
       }
 
       toast.success('Course details saved! Proceed to next step.')
+      push(`/t/${user?.id}/my-courses/${data.id}`)
 
       // Proceed to next step or reset form
     } catch (error) {
@@ -90,46 +87,40 @@ const CourseStep2 = ({course}:{
   }
 
   return (
-    <section className="padding py-12 w-full space-y-6">
+    <section className="w-full max-w-xl space-y-6">
       <div>
-        <h2 className="text-2xl font-bold pb-3">Setup course </h2>
+        <h2 className="text-2xl font-bold pb-3">Add a new course</h2>
         <p className="text-sm text-muted-foreground">
-          Completed 2/6
+          Begin by entering your course title and a compelling description. This helps learners understand what your course is about.
         </p>
       </div>
 
-      <div className="flex justify-self-end gap-4">
-        <Button className='bg-black'>Publish</Button>
-        <DeleteCard onDelete={async ()=>{}} trigger={<Button variant='outline' className='border border-red-400 text-red-400 hover:text-red-700 duration-300 '><Trash2/></Button>}/>
-      </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <CustomInput
+          label="Course Title"
+          description="Make it short, clear, and enticing. This will be the first impression learners get."
+          name="title"
+          value={form.title}
+          error={errors.title}
+          onChange={handleChange}
+        />
 
-      <section className="grid gap-8 md:grid-cols-2">
-         <div className="space-y-4">
+        <CustomInput
+          label="Course Description"
+          description="Write a structured overview. Use keywords that improve SEO and attract the right audience."
+          name="description"
+          value={form.description}
+          error={errors.description}
+          onChange={handleChange}
+          isTextArea
+        />
 
-          <Heading title='Customize your course' icon={<LayoutGrid/>} />
-          <TitleForm course={course} />
-          <DescriptionForm course={course} />
-          <CourseObjectivesForm course={course}/>
-          <CoverImageForm course={course}  />
-
-         </div>
-
-
-
-
-         <div className="space-y-4">
-          <Heading title='Course Sections and Chapters' icon={<LayoutList/>} />
-
-          <CourseSections course={course} />
-
-          <PriceForm course={course}/>
-
-         </div>
-      </section>
-
- 
+        <CustomButton type="submit" isLoading={isLoading} loadingText='Saving...'>
+           Save and Continue 
+        </CustomButton>
+      </form>
     </section>
   )
 }
 
-export default CourseStep2
+export default CreateCourse

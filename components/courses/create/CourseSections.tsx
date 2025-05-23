@@ -14,7 +14,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Course, Section,  Chapter, SectionInput } from '@/types';
 import { Button } from '@/components/ui/button';
 import { CustomInput } from '@/components/shared/CustomInput';
@@ -60,7 +60,10 @@ async function saveSections(sections: Section[]) {
 }
 
 
-export const CourseSections = ({ course }: { course: Course }) => {
+export const CourseSections = ({ course, setChapter, setCurrentStepIndex }: { course: Course,
+  setChapter:Dispatch<SetStateAction<Chapter>>
+  setCurrentStepIndex:Dispatch<SetStateAction<number>> 
+ }) => {
   const {user} = useUserStore()
 console.log({course})
 
@@ -130,14 +133,9 @@ console.log({course})
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNewTitle(value);
-      setError('Title must be at least 5 characters.');
-    // if (error && value.length >= MIN_SECTION_LENGTH) {
-    //   setError('');
-    // } else if (value.length < MIN_SECTION_LENGTH) {
-    //   setError('Title must be at least 5 characters.');
-    // }
+    setError('')
   };
-// console.log({data,error})
+ 
 
 const handleAddSection = async () => {
   const title = newTitle.trim();
@@ -157,7 +155,7 @@ const handleAddSection = async () => {
     status: 'ACTIVE',
     createdBy: user?.id,
   };
-
+console.log({formData})
   try {
     const { data, error } = await postRequest({
       body: {
@@ -231,67 +229,72 @@ console.log({data,error})
 
 // console.log({sections})
   return (
-    <section className="p-4 bg-slate-50 border rounded-md space-y-3">
-      <div className="space-y- ">
-        <p className="font-semibold">Sections</p>
-        <small className="text-gray-700">
-          Easily create new item and drag to reorder the lists
-        </small>
-      </div>
+    <section className="flex flex-col items-center pt-8 pb-20 gap-4">
+      <Heading title='Course Modules and Chapters' icon={<LayoutList/>} />
+      <section className="p-4 w-full mx-auto max-w-2xl  bg-slate-50 border rounded-md space-y-3">
+        <div className="space-y- ">
+          <p className="font-semibold">Sections</p>
+          <small className="text-gray-700">
+            Easily create new item and drag to reorder the lists
+          </small>
+        </div>
 
-      {hasChanges && (
-        <CustomButton disabled={loading} isLoading={saving} loadingText='Saving...' onClick={handleSave} className="mt-2 flex justify-self-end text-sm h-8 bg-black">
-          Save reordering
-        </CustomButton>
-      )}
-
-      <div className=" space-y-2 ">
-        {
-          sections.length > 0 ?
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={sections.map((s) => `section-${s.alias}`)}
-              strategy={verticalListSortingStrategy}
-            >
-              {sections.map((section, index) => (
-                <SectionItem
-                  key={section.alias}
-                  section={section}
-                  course={course}
-                  index={index}
-                  onUpdateLabel={handleUpdateLabel}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
-            :
-          <p className="flex justify-self-center items-self-center text-center w-80 p-6 text-gray-600">Empty list. Start adding sections</p>
-        }
-      </div>
-
-      <section>
-        {showInput ? (
-          <div className="flex items-center gap-2">
-            <CustomInput
-              disabled={loading}
-              placeholder="New section title"
-              value={newTitle}
-              onChange={handleChange}
-              error={error}
-              className='bg-white'
-            />
-            <CustomButton size="sm" variant="outline" disabled={saving} isLoading={loading} loadingText='Add' onClick={handleAddSection}>
-              Add
-            </CustomButton>
-            <Button disabled={loading||saving} size="sm" variant="ghost" onClick={() => setShowInput(false)}>
-              Cancel
-            </Button>
-          </div>
-        ) : (
-          <Button disabled={loading||saving}  variant="outline" size="sm" onClick={() => setShowInput(true)}>
-            + Add a section
-          </Button>
+        {hasChanges && (
+          <CustomButton disabled={loading} isLoading={saving} loadingText='Saving...' onClick={handleSave} className="mt-2 flex justify-self-end text-sm h-8 bg-black">
+            Save reordering
+          </CustomButton>
         )}
+
+        <div className=" space-y-2 ">
+          {
+            sections.length > 0 ?
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={sections.map((s) => `section-${s.alias}`)}
+                strategy={verticalListSortingStrategy}
+              >
+                {sections.map((section, index) => (
+                  <SectionItem
+                    key={section.alias}
+                    section={section}
+                    course={course}
+                    index={index}
+                    onUpdateLabel={handleUpdateLabel}
+                    setChapter={setChapter}
+                    setCurrentStepIndex={setCurrentStepIndex}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+              :
+            <p className="flex justify-self-center items-self-center text-center w-80 p-6 text-gray-600">Empty list. Start adding sections</p>
+          }
+        </div>
+
+        <section>
+          {showInput ? (
+            <div className="flex items-center gap-2">
+              <CustomInput
+                disabled={loading}
+                placeholder="New section title"
+                value={newTitle}
+                onChange={handleChange}
+                error={error}
+                className='bg-white'
+              />
+              <CustomButton size="sm" variant="outline" disabled={saving} isLoading={loading} loadingText='Add' onClick={handleAddSection}>
+                Add
+              </CustomButton>
+              <Button disabled={loading||saving} size="sm" variant="ghost" onClick={() => setShowInput(false)}>
+                Cancel
+              </Button>
+            </div>
+          ) : (
+            <Button disabled={loading||saving}  variant="outline" size="sm" onClick={() => setShowInput(true)}>
+              + Add a section
+            </Button>
+          )}
+        </section>
       </section>
     </section>
   );
@@ -304,24 +307,28 @@ console.log({data,error})
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ChevronDown, Grid, Layout, LayoutDashboard, LayoutGrid, Pen } from 'lucide-react';
+import { ChevronDown, Grid, Layout, LayoutDashboard, LayoutGrid, LayoutList, Pen, Trash2, X } from 'lucide-react';
 import clsx from 'clsx';
 import { CourseChapters } from './CourseChapters';
 import { generateSlug } from '@/lib/helper';
-import { postRequest, putRequest } from '@/utils/api';
+import { deleteRequest, postRequest, putRequest } from '@/utils/api';
 import { appwriteConfig } from '@/lib/actions/config';
 import { useUserStore } from '@/store/useUserStore';
 import { toast } from 'react-toastify';
-import { CustomButton } from '@/components/shared/CustomButton';
+import { CustomButton, TextButton } from '@/components/shared/CustomButton';
 import { Input } from '@/components/ui/input';
+import Heading from '@/components/common/Heading';
+import DeleteCard from '@/components/common/DeleteCard';
 
 export default function SectionItem({
   section,
   course,
-  index,
-  onUpdateLabel,
+  index,setChapter,
+  onUpdateLabel,setCurrentStepIndex,
 }: {
   section: Section;
+  setChapter:Dispatch<SetStateAction<Chapter>> 
+  setCurrentStepIndex:Dispatch<SetStateAction<number>>
   index: number;
   course:Course;
   onUpdateLabel: (id: string, label: string, status?:string) => void;
@@ -378,12 +385,6 @@ export default function SectionItem({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setChapterTitle(value);
-      setError('Title must be at least 5 characters.');
-    // if (error && value.length >= MIN_SECTION_LENGTH) {
-    //   setError('');
-    // } else if (value.length < MIN_SECTION_LENGTH) {
-    //   setError('Title must be at least 5 characters.');
-    // }
   };
 
   const handleAddChapter = async () => {
@@ -430,6 +431,27 @@ export default function SectionItem({
       setLoading(false);
     }
   };
+
+const handledeleteSection = async (documentId: string) => {
+  try {
+    const { success } = await deleteRequest({
+      body: {
+        documentId,
+        collectionId: appwriteConfig.sectionsCollectionId,
+      },
+    });
+
+    if (success) {
+      toast.success('Section deleted successfully');
+    } else {
+      toast.error('Section could not be deleted. Try again.');
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error('Unhandled error. Check your network and try again.');
+  }
+};
+
  
   return (
     <div
@@ -458,9 +480,9 @@ export default function SectionItem({
             <CustomButton loadingText='Saving...' isLoading={saving} size="sm" onClick={handleUpdateSectionTitle}>
               Save
             </CustomButton>
-            <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>
-              Cancel
-            </Button>
+            <TextButton size="sm" variant="ghost" onClick={() => setEditing(false)}>
+              <X/>
+            </TextButton>
           </div>
         ) : (
           <>
@@ -472,11 +494,19 @@ export default function SectionItem({
               <small className="rounded-full py- px-3 border">{section.status || 'DRAFT'}</small>
               <Pen size={14} className="cursor-pointer" onClick={() => setEditing(true)} />
               
+
+
+            <DeleteCard
+              trigger={<Trash2 size={14} className="text-red-600 cursor-pointer" />}
+              onDelete={() => handledeleteSection(section.$id!)}
+              text={`Are you sure you want to delete the section "${section.label}"? This action will also permanently delete all associated chapters and quizzes.`}
+            />
               <ChevronDown
                 size={20}
                 className={`${expanded ? 'rotate-180' : ''} transition-transform cursor-pointer`}
                 onClick={() => setExpanded((prev) => !prev)}
               />
+              
             </div>
           </>
         )}
@@ -486,7 +516,7 @@ export default function SectionItem({
         <>
           {chapters &&  chapters?.length > 0 ? (
             <div className="mt-2 border-t pt-2">
-              <CourseChapters chapters={chapters} course={course} />
+              <CourseChapters chapters={chapters} course={course} setChapter={setChapter} setCurrentStepIndex={setCurrentStepIndex}/>
             </div>
           ) : (
             <div className="border-t my-2 pt-2 text-center text-sm text-gray-500">

@@ -80,6 +80,7 @@ export type Course = {
 export type Section = {
   alias: string;
   label: string;
+  position:number;
   course: string; // ID of the related course
   chapters: Chapter[]; // Array of chapter IDs
 

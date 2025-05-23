@@ -67,11 +67,11 @@ const ChapterTitleForm = ({
   };
 
   const actionRow = (
-    <div className="flex items-center justify-between">
+    <div onClick={() => setIsEdit(true)} className="flex items-center justify-between">
       {!isEdit ? (
         <TextButton
           type="button"
-          onClick={() => setIsEdit(true)}
+          
           editType='edit'
         />
       ) : (
