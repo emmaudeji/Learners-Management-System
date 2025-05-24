@@ -1,3 +1,4 @@
+import LandingPageHeader from "@/components/students/LandingPageHeader";
 import { getCurrentUser } from "@/lib/actions/user.actions";
 import Link from "next/link";
 
@@ -152,6 +153,7 @@ export default   function HomePage() {
 
   return (
     <>
+      <LandingPageHeader/>
       <HeroSection />
       {/* <TrustedBy /> */}
       <FeaturedCourses />

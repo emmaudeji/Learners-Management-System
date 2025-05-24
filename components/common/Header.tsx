@@ -5,8 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Heart, User, ChevronDown } from 'lucide-react';
+import { ShoppingCart, Heart, User, ChevronDown, User2, UserCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import MyLearningBtn from '../students/MyLearningBtn';
+import ProfileNav from './ProfileNav';
+import { useUserStore } from '@/store/useUserStore';
 
 export function Header() {
   // TODO: Replace with real auth state
@@ -16,6 +19,7 @@ export function Header() {
   const wishlistCount = 4;
 
   const pathname = usePathname();
+  const {user} =useUserStore()
 
   return (
     <header className="w-full bg-white border-b sticky top-0 z-50">
@@ -39,14 +43,18 @@ export function Header() {
 
         {/* Center: Search */}
         <div className="hidden md:flex flex-1 justify-center">
-          <Input placeholder="Search for courses..." className="w-full max-w-md" />
+          <Input placeholder="Find courses to boost your career." className="w-full max-w-xl py-4 rounded-full" />
         </div>
 
         {/* Right: My Learning + Icons + Auth */}
         <div className="flex items-center gap-4">
-          <Link href="/s/my-learning" className={cn("text-sm hover:text-primary transition", pathname === '/s/my-learning' && 'text-primary font-semibold')}>
-            My Learning
-          </Link>
+          {/*  */}
+
+          {user && <MyLearningBtn triger={
+            <Link href="/s/my-learning" className={cn("text-sm hover:text-primary transition", pathname === '/s/my-learning' && 'text-primary font-semibold')}>
+              My Learning
+            </Link>
+          }/>}
 
           {/* Wishlist Icon */}
           <Link href="/wishlist" className="relative">
@@ -69,14 +77,11 @@ export function Header() {
           </Link>
 
           {/* User/Login */}
-          {!isLoggedIn ? (
-            <Link href="/profile" className="flex items-center gap-2 text-sm font-medium hover:text-primary transition">
-              <User className="w-5 h-5" />
-              <span>{userName}</span>
-            </Link>
+          {user ? (
+            <ProfileNav />
           ) : (
             <Link href="/auth">
-              <Button size="sm" className='flex gap-2 items-center'> <User className="w-5 h-5" />Login</Button>
+              <Button size="sm" className='flex gap-2 items-center h-9'> <UserCircle2 size={28} className="w-5 h-5" />Login</Button>
             </Link>
           )}
         </div>
