@@ -67,6 +67,7 @@ export type Course = {
   imageUrl: string;  
   user: string;  
   price: Pricing;  
+  isFree: boolean; 
 
   id: string;
   $id?: string;
@@ -88,6 +89,7 @@ export type Section = {
   id: string;
   status: StatusType;
   createdBy?: CreatedBy,
+  isFree: boolean; 
   createdAt?: string;
   updatedAt?: string;
   permissions?: string[];
@@ -117,6 +119,7 @@ export type Chapter = {
   content: string;
   videoUrl: string;  
   imageUrl: string; 
+  isFree: boolean; 
   feedbacks: string[];  
   attachments?: string[];  
   

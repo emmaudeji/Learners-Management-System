@@ -6,15 +6,21 @@ import { Chapter } from '@/types'
 import { putRequest } from '@/utils/api'
 import { Label } from '@radix-ui/react-label'
 import { Disc, Save } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
 const MIN_CONTENT_LENGTH = 20
 
 const ContentEditor = ({ chapter }: { chapter: Chapter }) => {
      const [form, setForm] = useState({
-        content: chapter.content || '',
+        content: chapter?.content || '',
       })
+
+      useEffect(() => {
+        setForm({
+        content: chapter?.content || '',
+      })
+      }, [chapter])
     
       const [errors, setErrors] = useState<{ [key: string]: string }>({})
       const [isLoading, setIsLoading] = useState(false)
@@ -46,13 +52,13 @@ const ContentEditor = ({ chapter }: { chapter: Chapter }) => {
           const { error } = await putRequest({
             body: {
               collectionId: appwriteConfig.chaptersCollectionId,
-              documentId: chapter.id,
+              documentId: chapter?.id,
               formData: form,
             },
           })
     
           if (error) {
-            toast.error(error || 'Failed to update chapter.')
+            toast.error(error || 'Failed to update chapter?.')
             return
           }
     

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ChapterQuizForm from './ChapterQuizForm';
 import { QuizQuestion, Chapter } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,10 @@ const ChapterQuizeWrapper = ({ chapter }: { chapter: Chapter }) => {
   const [mode, setMode] = useState<'list' | 'form'>(
     quizzes.length === 0 ? 'form' : 'list'
   );
+
+  // useEffect(() => {
+ 
+  // }, [chapter])
 
   const handleCreateSuccess = (newQuiz: QuizQuestion) => {
     setQuizzes((prev) => [...prev, newQuiz]);

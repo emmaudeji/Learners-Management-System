@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AttachmentUploader from '@/components/common/AttachmentUploader'
 import EmptyList from '@/components/common/EmptyList'
 import { Attachment, Chapter } from '@/types'
@@ -18,6 +18,9 @@ const ChapterAttachments = ({ chapter }: Props) => {
   const [chapterAttachments, setChapterAttachments] = useState<string[]>(
     chapter.attachments || []
   )
+  useEffect(() => {
+    setChapterAttachments(chapter.attachments || [])
+  }, [chapter])
 
   const handleSelect = (att: Attachment) => {
     setChapterAttachments((prev) => [...prev, att.url])

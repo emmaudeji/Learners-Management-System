@@ -1,4 +1,5 @@
 import { useUserStore } from "@/store/useUserStore";
+import { Chapter, Course, Section } from "@/types";
 
 export const generateSlug = (name: string, length: number = 6): string => {
   const maxSlugLength = 36 - (length + 1); // Total must not exceed 36 chars
@@ -28,3 +29,21 @@ export const getUrl = (path:string, id?:string) => {
   const {user} = useUserStore()
   return `/t/${id || user?.id}/${path}`
 }
+
+export const findChapterAndSection = (
+  course: Course,
+  sectionAlias?: string,
+  chapterAlias?: string
+): { section?: Section; chapter?: Chapter } => {
+  if (!sectionAlias || !chapterAlias || !course?.sections?.length) {
+    return {};
+  }
+
+  const section = course.sections.find(sec => sec.alias === sectionAlias);
+  if (!section) return {};
+
+  const chapter = section.chapters.find(ch => ch.alias === chapterAlias);
+  if (!chapter) return { section };
+
+  return { section, chapter };
+};

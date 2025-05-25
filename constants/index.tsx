@@ -1,6 +1,4 @@
-import { Plane, Map, FileText, GraduationCap,  } from 'lucide-react';
-import React from 'react';
- 
+
 export const fields = {
   heroBanner: ["id", "url","type","description","header", "cta","createdAt","createdBy"],
   courses: [
@@ -23,42 +21,6 @@ export const fields = {
     "permissions",
   ],
 
-  feedback: [
-     'id', 'name', 'socialMediaLink', 'testimony', 'imgUrl', 'title', 'email', 'rating','createdAt'
-  ],
-  category: ['label', 'value',],
-  blog: [
-    "id",
-    "slug",
-    "title",
-    // "content",
-    "category",
-    // "tags",
-    "views",
-    "likes",
-    "image",
-    "package",
-    // "author",
-    // "status",
-    "publishedDate",
-    // "createdBy"
-  ],
-  post: [
-    "id",
-    "slug",
-    "title",
-    "content",
-    "category",
-    "tags",
-    "views",
-    "likes",
-    "image",
-    "package",
-    "author",
-    "excerpts",
-    "publishedDate",
-    // "createdBy"
-  ],
   user:[
     "fullName",
     "email",
@@ -73,42 +35,10 @@ export const fields = {
     "createdAt",
     "updatedAt",
   ],
-  newUser:[
-    "fullName",
-    "email",
-    "createdBy",
-    "role",
-    "id",
-    "status",
-    "createdAt",
-    "updatedAt",
-  ],
+ 
 }
 
-export const categoryOptions = {
-  featured:['visa','Travelling', 'schooling'],
-  trending:['lifestyle','technology','destination' ],
-  beststories:['wellness','schoolling','romance','lifestyle', ],
-  discoveries:['visa','Travelling', 'business'],
-  destinations:['Destination','Travelling', 'romance'],
-  bestTwo:['Visa','Travelling'],
-}
-
-export const TOUROFFERS = [
-  { label: "Accommodations", value: "Accommodations" },
-  { label: "Airport Transfer", value: "Airport Transfer" },
-  { label: "Taxes", value: "Taxes" },
-  { label: "Travel Insurance", value: "Travel Insurance" },
-  { label: "Breakfast & Dinner", value: "Breakfast & Dinner" },
-  { label: "Tours", value: "Tours" },
-];
-
-export const TOURPACKAGES = [
-  { label: "Group Excursion", value: "Group Excursion" },
-  { label: "Individual Visa Services", value: "Individual Visa Services" },
-  { label: "Family Adventures", value: "Family Adventures" },
-  { label: "Educational Expeditions for Kids", value: "Educational Expeditions for Kids" },
-];
+export const statuses = ["DRAFT", "ACTIVE", "ARCHIVED"] 
 
 export const CURRENCIES = [
   { label: "British Pound Sterling £", value: "£" },
@@ -122,14 +52,7 @@ export const CURRENCIES = [
   { label: "Nigerian Naira ₦", value: "₦" },
 ];
 
-
-export const TOURTYPES = [
-  { label: "Per Person", value: "Per Person" },
-  { label: "For 2 Adults", value: "For 2 Adults" },
-  { label: "Group", value: "Group" },
-  { label: "Processing Fee", value: "Processing Fee" },
-]
-
+ 
 export const settings = {
   COUNTLIMIT: 20,
   REVALIDATE_TIME: 3,

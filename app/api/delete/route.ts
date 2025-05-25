@@ -9,6 +9,7 @@ export async function DELETE(req: NextRequest) {
     const { collectionId, documentId } = body;
 
     if (!collectionId || !documentId) {
+      console.log("DELETE ERROR: Missing required fields: collectionId and documentId")
       return NextResponse.json(
         { error: "Missing required fields: collectionId and documentId" },
         { status: 400 }
@@ -16,16 +17,17 @@ export async function DELETE(req: NextRequest) {
     }
 
     // ✅ Call your Appwrite function
-    const { success,  } = await deleteDocument(collectionId, documentId);
+    const { success, error } = await deleteDocument(collectionId, documentId);
+    console.log({success})
 
     if (!success ) {
       return NextResponse.json(
-        { error: "Failed to delete document." },
+        { error: error||"Failed to delete document." },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ data:success }, { status: 200 });
+    return NextResponse.json({ success }, { status: 200 });
 
   } catch (error) {
     console.error(`UNHANDLED DELETE ERROR: `, error);

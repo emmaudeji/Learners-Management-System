@@ -58,6 +58,7 @@ export const CourseObjectivesForm = ({ course }: { course: Course }) => {
     setObjectives((prev) => [...prev, newObjective.trim()]);
     setNewObjective("");
     setError("");
+    setIsSave(true)
   };
 
   const handleRemoveObjective = (index: number) => {
@@ -66,6 +67,8 @@ export const CourseObjectivesForm = ({ course }: { course: Course }) => {
       setEditIndex(null);
       setEditValue("");
     }
+    setIsSave(true)
+
   };
 
   const handleEditClick = (index: number, currentValue: string) => {
@@ -203,7 +206,9 @@ export const CourseObjectivesForm = ({ course }: { course: Course }) => {
           </button>
         )}
 
-        {isEdit && JSON.stringify(objectives) !== JSON.stringify(initialObjectives) || isSave && (
+        {/* fix this truthy */}
+
+        {(isEdit && JSON.stringify(objectives) !== JSON.stringify(initialObjectives)) || isSave && (
           <Button
             type="button"
             onClick={handleSaveObjectives}

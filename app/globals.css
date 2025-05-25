@@ -3,19 +3,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* @theme inline {
-  --font-karla: var(--font-geist-karla);
-  --font-satoshi: var(--font-satoshi);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-} */
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono); */
-  /* --font-lexend: var(--font-geist-lexend); */
+  --font-karla: var(--font-geist-karla);
+  --font-poppins: var(--font-poppins); 
+  --font-montserrat: var(--font-montserrat); 
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -137,21 +130,13 @@
   --sidebar-ring: oklch(0.527 0.154 150.069);
 }
 
-  /* html,
-  body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: var(--font-geist-karla);
-  } */
-
  
 @layer base {
   body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* font-family: var(--font-geist-lexend); */
+    font-family:var(--font-geist-karla);
   }
   * {
     @apply border-border outline-ring/50;
@@ -165,7 +150,10 @@
   .padding {
     @apply mx-auto max-w-7xl px-6
   }
-  h1 {
+ 
+}
+
+ h1 {
     @apply text-4xl sm:text-6xl  font-semibold
   }
   h2 {
@@ -175,11 +163,14 @@
     @apply text-xl font-semibold sm:text-2xl
   }
   h5 {
-    @apply  sm:text-xl font-bold 
+    @apply  sm:text-xl font-semibold 
   }
 h6 {
     @apply  sm:text-lg font-semibold 
   }
+
+.card{
+  @apply bg-slate-50/50 p-4 rounded-md border
 }
  
 /* ========== Rich Text Editor (Quill) Styles ========== */
@@ -268,5 +259,7 @@ h6 {
 .ql-font-roboto {
   font-family: 'Roboto, sans-serif';
 }
+
+
 
 /* Repeat for each font you added... */

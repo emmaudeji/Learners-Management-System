@@ -7,19 +7,19 @@ import { useEffect } from "react"
 
 export const useChapters = ({chapter}:{chapter:Chapter}) => {
 
-    const fetchCourse = async () => {
-        const {data, error} = await getOneRequest({
-            body:{
-                collectionId:appwriteConfig.coursesCollectionId,
-                fields:fields.courses,
-                // documentId:chapter.course.$id
-            }
-        })
-        // console.log({data,error})
-    }
-    useEffect(() => {
-      fetchCourse()
-    }, [])
+    // const fetchCourse = async () => {
+    //     const {data, error} = await getOneRequest({
+    //         body:{
+    //             collectionId:appwriteConfig.coursesCollectionId,
+    //             fields:fields.courses,
+    //             // documentId:chapter.course.$id
+    //         }
+    //     })
+    //     // console.log({data,error})
+    // }
+    // useEffect(() => {
+    //   fetchCourse()
+    // }, [])
     
     return null
 }

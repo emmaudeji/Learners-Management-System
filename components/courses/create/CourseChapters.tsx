@@ -7,8 +7,12 @@ import Link from "next/link";
 import { getUrl } from "@/lib/helper";
 import { Dispatch, SetStateAction } from "react";
 import { TextButton } from "@/components/shared/CustomButton";
+import { useRouter } from "next/navigation";
 
-const ChapterItem = ({ chapter, index, course , setChapter, setCurrentStepIndex}: { chapter: Chapter; index: number, course:Course,
+const ChapterItem = ({ chapter, index, section , setChapter, setCurrentStepIndex}: { 
+    chapter: Chapter; 
+    section: Section; 
+    index: number, course:Course,
     setChapter:Dispatch<SetStateAction<Chapter>>
     setCurrentStepIndex:Dispatch<SetStateAction<number>>
  }) => {
@@ -25,7 +29,7 @@ const ChapterItem = ({ chapter, index, course , setChapter, setCurrentStepIndex}
     transform: CSS.Transform.toString(transform),
     transition,
   };
-
+  const {replace} = useRouter()
   return (
     <div
       ref={setNodeRef}
@@ -33,26 +37,28 @@ const ChapterItem = ({ chapter, index, course , setChapter, setCurrentStepIndex}
       {...attributes}
       
       className={clsx(
-        "flex gap-2 items-center justify-between p-2 bg-white border-b mb-2",
+        "flex pl-4 gap-2 items-center justify-between p-2 bg-white border-b mb-2",
         isDragging && "bg-slate-100"
       )}
     >
-        <LayoutGrid size={20} {...listeners} className='cursor-grab text-gray-300 hover:text-gray-500'/>
+        {/* <LayoutGrid size={20} {...listeners} className='cursor-grab text-gray-300 hover:text-gray-500'/> */}
 
-        <span className="text-sm capitalize font- w-full">{index + 1}. {chapter.label}</span>
+        <span className="text-sm capitalize font- w-full"> <span className="text-gray-500">CH {index + 1}.</span> {chapter.label}</span>
         <div className="flex">
           <TextButton editType="edit" onClick={()=>{
             setChapter(chapter)
             setCurrentStepIndex(2)
+            replace(`?step=2&chapter=${chapter.alias}&section=${section.alias}`)
           }}/>
         </div>
     </div>
   );
 };
 
-export const CourseChapters = ({ chapters, course, setChapter, setCurrentStepIndex}: { chapters: Chapter[], course:Course,
+export const CourseChapters = ({ chapters, course, section, setChapter, setCurrentStepIndex}: { chapters: Chapter[], course:Course,
     setChapter:Dispatch<SetStateAction<Chapter>>
     setCurrentStepIndex:Dispatch<SetStateAction<number>>
+    section: Section; 
     
  }) => {
   return (
@@ -62,7 +68,9 @@ export const CourseChapters = ({ chapters, course, setChapter, setCurrentStepInd
     >
       <div className="space-y-2">
         {chapters?.map((chapter, index) => (
-          <ChapterItem key={chapter.alias} chapter={chapter} index={index} course={course} setChapter={setChapter} setCurrentStepIndex={setCurrentStepIndex} />
+          <ChapterItem key={chapter.alias} 
+            section={section}
+            chapter={chapter} index={index} course={course} setChapter={setChapter} setCurrentStepIndex={setCurrentStepIndex} />
         ))}
       </div>
     </SortableContext>

@@ -65,7 +65,7 @@ export const CourseSections = ({ course, setChapter, setCurrentStepIndex }: { co
   setCurrentStepIndex:Dispatch<SetStateAction<number>> 
  }) => {
   const {user} = useUserStore()
-console.log({course})
+// console.log({course})
 
   const [sections, setSections] = useState<Section[]>(course.sections || []);
   const [hasChanges, setHasChanges] = useState(false);
@@ -231,12 +231,12 @@ console.log({data,error})
   return (
     <section className="flex flex-col items-center pt-8 pb-20 gap-4">
       <Heading title='Course Modules and Chapters' icon={<LayoutList/>} />
-      <section className="p-4 w-full mx-auto max-w-2xl  bg-slate-50 border rounded-md space-y-3">
+      <section className="  w-full mx-auto max-w-2xl  card  space-y-3">
         <div className="space-y- ">
-          <p className="font-semibold">Sections</p>
-          <small className="text-gray-700">
-            Easily create new item and drag to reorder the lists
-          </small>
+          <h6 className="font-semibold text">Course Modules</h6>
+          <p className="text-gray-700">
+            Easily create, edit modules and add new chapters. Drag and drop to reorder the lists
+          </p>
         </div>
 
         {hasChanges && (
@@ -262,6 +262,7 @@ console.log({data,error})
                     onUpdateLabel={handleUpdateLabel}
                     setChapter={setChapter}
                     setCurrentStepIndex={setCurrentStepIndex}
+                    setSections={setSections}
                   />
                 ))}
               </SortableContext>
@@ -291,7 +292,7 @@ console.log({data,error})
             </div>
           ) : (
             <Button disabled={loading||saving}  variant="outline" size="sm" onClick={() => setShowInput(true)}>
-              + Add a section
+              + Add a module
             </Button>
           )}
         </section>
@@ -303,11 +304,9 @@ console.log({data,error})
 
 
 
-
-
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ChevronDown, Grid, Layout, LayoutDashboard, LayoutGrid, LayoutList, Pen, Trash2, X } from 'lucide-react';
+import { ChevronDown, Grid, Layout, LayoutDashboard, LayoutGrid, LayoutList, Pen, PenLine, Trash2, X } from 'lucide-react';
 import clsx from 'clsx';
 import { CourseChapters } from './CourseChapters';
 import { generateSlug } from '@/lib/helper';
@@ -316,18 +315,20 @@ import { appwriteConfig } from '@/lib/actions/config';
 import { useUserStore } from '@/store/useUserStore';
 import { toast } from 'react-toastify';
 import { CustomButton, TextButton } from '@/components/shared/CustomButton';
-import { Input } from '@/components/ui/input';
 import Heading from '@/components/common/Heading';
 import DeleteCard from '@/components/common/DeleteCard';
+import StatusSelect from './StatusSelect';
 
 export default function SectionItem({
   section,
   course,
   index,setChapter,
   onUpdateLabel,setCurrentStepIndex,
+  setSections,
 }: {
   section: Section;
   setChapter:Dispatch<SetStateAction<Chapter>> 
+  setSections:Dispatch<SetStateAction<Section[]>> 
   setCurrentStepIndex:Dispatch<SetStateAction<number>>
   index: number;
   course:Course;
@@ -405,6 +406,7 @@ export default function SectionItem({
       course: course.id,
       status: 'ACTIVE',
       createdBy: user?.id,
+      position: section.chapters.length
     };
 
     try {
@@ -422,6 +424,16 @@ export default function SectionItem({
       }
 
       setChapters(prev => [...prev, data]);
+      setSections(prevSections =>
+          prevSections.map(section =>
+            section.alias === section.$id
+              ? {
+                  ...section,
+                  chapters: [...section.chapters, data],
+                }
+              : section
+          )
+        );
       setChapterTitle('');
       setShowInput(false);
       toast.success('Section added successfully');
@@ -433,16 +445,21 @@ export default function SectionItem({
   };
 
 const handledeleteSection = async (documentId: string) => {
-  try {
-    const { success } = await deleteRequest({
-      body: {
+  const body = {
         documentId,
         collectionId: appwriteConfig.sectionsCollectionId,
-      },
+      }
+  try {
+    const { success } = await deleteRequest({
+      body 
     });
 
     if (success) {
       toast.success('Section deleted successfully');
+      setSections((prev) => {
+        const filteredList = prev?.filter(({alias})=>alias !== documentId)
+        return filteredList
+      })
     } else {
       toast.error('Section could not be deleted. Try again.');
     }
@@ -486,26 +503,28 @@ const handledeleteSection = async (documentId: string) => {
           </div>
         ) : (
           <>
-            <span className="truncate w-full font-bold text-sm">
-              {index + 1}. {section.label}
-            </span>
+            <p className="truncate w-full  text-sm">
+              <span className='text-gray-500'>MODULE {index + 1}. </span> <span className=' font-semibold'>{section.label}</span> 
+            </p>
 
             <div className="flex items-center gap-1">
-              <small className="rounded-full py- px-3 border">{section.status || 'DRAFT'}</small>
-              <Pen size={14} className="cursor-pointer" onClick={() => setEditing(true)} />
-              
-
-
-            <DeleteCard
-              trigger={<Trash2 size={14} className="text-red-600 cursor-pointer" />}
-              onDelete={() => handledeleteSection(section.$id!)}
-              text={`Are you sure you want to delete the section "${section.label}"? This action will also permanently delete all associated chapters and quizzes.`}
-            />
-              <ChevronDown
-                size={20}
-                className={`${expanded ? 'rotate-180' : ''} transition-transform cursor-pointer`}
-                onClick={() => setExpanded((prev) => !prev)}
+              <StatusSelect
+                  currentStatus = {section.status}
+                  documentId={section.$id!}
+                  collectionId={appwriteConfig.sectionsCollectionId}
               />
+              <PenLine size={14} className="cursor-pointer text-blue-800" onClick={() => setEditing(true)} />
+              
+              <DeleteCard
+                trigger={<Trash2 size={14} className="text-red-600 cursor-pointer" />}
+                onDelete={() => handledeleteSection(section.alias)}
+                text={`Are you sure you want to delete the section "${section.label}"? This action will also permanently delete all associated chapters and quizzes.`}
+              />
+                <ChevronDown
+                  size={20}
+                  className={`${expanded ? 'rotate-180' : ''} transition-transform cursor-pointer`}
+                  onClick={() => setExpanded((prev) => !prev)}
+                />
               
             </div>
           </>
@@ -516,7 +535,7 @@ const handledeleteSection = async (documentId: string) => {
         <>
           {chapters &&  chapters?.length > 0 ? (
             <div className="mt-2 border-t pt-2">
-              <CourseChapters chapters={chapters} course={course} setChapter={setChapter} setCurrentStepIndex={setCurrentStepIndex}/>
+              <CourseChapters chapters={chapters} course={course} section={section} setChapter={setChapter} setCurrentStepIndex={setCurrentStepIndex}/>
             </div>
           ) : (
             <div className="border-t my-2 pt-2 text-center text-sm text-gray-500">

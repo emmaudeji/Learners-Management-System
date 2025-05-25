@@ -8,7 +8,7 @@ import { Chapter } from '@/types';
 import { putRequest } from '@/utils/api';
 import { Label } from '@radix-ui/react-label';
 import { Pen } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 const MIN_TITLE_LENGTH = 5;
@@ -20,12 +20,16 @@ const ChapterTitleForm = ({
   chapter: Chapter;
   type?: string;
 }) => {
-  const initialTitle = chapter.label || '';
+  const initialTitle = chapter?.label || '';
   const [label, setLabel] = useState(initialTitle);
   const [error, setError] = useState('');
   const [isEdit, setIsEdit] = useState(!initialTitle.length);
   const [isLoading, setIsLoading] = useState(false);
-
+ 
+  useEffect(() => {
+    setLabel(chapter.label)
+  }, [chapter])
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLabel(e.target.value);
     if (error) setError('');
@@ -45,7 +49,7 @@ const ChapterTitleForm = ({
       const { error: updateError } = await putRequest({
         body: {
           collectionId: appwriteConfig.chaptersCollectionId,
-          documentId: chapter.alias,
+          documentId: chapter?.alias,
           formData: { label },
         },
       });

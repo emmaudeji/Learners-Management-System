@@ -87,12 +87,27 @@ const CreateCourseStep1 = ({course}:{
   }
 
   return (
-      <section className="pb-20 pt-8 max-w-3xl mx-auto flex flex-col items-center  gap-8 ">
+      <section className="pb-20 py-8 max-w-3xl mx-auto flex flex-col items-center  gap-8 px-4 ">
           <Heading title='Customize your course' icon={<LayoutGrid/>} />
           <TitleForm course={course} />
           <DescriptionForm course={course} />
           <CourseObjectivesForm course={course}/>
           <CoverImageForm course={course}  />
+
+          {/* design and add 
+          ✅ Target Audience:
+Entrepreneurs & startup founders
+
+SME owners and managers
+
+Business team leaders
+
+Freelancers managing client projects
+
+
+          */}
+
+           {/* add nex here */}
       </section>
  
   )

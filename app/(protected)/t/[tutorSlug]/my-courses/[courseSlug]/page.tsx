@@ -9,10 +9,12 @@ import React from 'react'
 
 const CoueseSlug = async ({params,searchParams}:{
     params:{courseSlug:string, tutorSlug:string}
-    searchParams:{step:string,}
+    searchParams:{step:string, chapter:string, section:string,}
 }) => {
     const documentId = (await params).courseSlug
     const step = (await searchParams).step
+    const chapterAlias = (await searchParams).chapter
+    const sectionAlias = (await searchParams).section
     const { data, error } = await getDocumentById<Course>(appwriteConfig.coursesCollectionId, documentId)
     // console.log( {data,error} )
     if(!data){ 
@@ -21,7 +23,7 @@ const CoueseSlug = async ({params,searchParams}:{
         redirect(`/t/${user?.id}/my-courses`)
     }
   return (
-    <CreateCourseWrapper course={data!} step={Number(step||0)} />
+    <CreateCourseWrapper course={data!} step={Number(step||0)} chapterAlias={chapterAlias} sectionAlias={sectionAlias} />
   )
 }
 

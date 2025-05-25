@@ -305,12 +305,12 @@ export const deleteDocument = async (collectionId: string, documentId: string): 
   const { databases } = await createSessionClient();
 
   try {
-    await databases.deleteDocument(
+   await databases.deleteDocument(
       appwriteConfig.databaseId,
       collectionId, 
       documentId,
     );
-
+  // console.log('DELETE: ', {collectionId,documentId, res})
     return { success: true };
   } catch (error:any) {
     console.error("Delete Document Error:", {
@@ -319,7 +319,7 @@ export const deleteDocument = async (collectionId: string, documentId: string): 
       status: error?.status || "Unknown status",
       details: error?.details || "No additional details",
     });
-    return { success: false, error: error.message||"Failed to add document." };
+    return { success: false, error: error.message||"Failed to delete document." };
 
   }
 };

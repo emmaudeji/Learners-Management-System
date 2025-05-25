@@ -45,20 +45,28 @@ const modules = {
   ],
 };
 
-  const formats = [
-    'header',
-    'bold',
-    'italic',
-    'underline',
-    'strike',
-    'list',
-    'bullet',
-    'blockquote',
-    'code-block',
-    'align',
-    'link',
-    'image',
-  ]
+const formats = [
+  'header',
+  'font',
+  'size',
+  'bold',
+  'italic',
+  'underline',
+  'strike',
+  'script',
+  'blockquote',
+  'code-block',
+  'list',
+  'indent',
+  'align',
+  'color',
+  'background',
+  'link',
+  'image',
+  'formula',
+];
+
+
 
 interface RichTextEditorProps {
   value: string
