@@ -145,9 +145,10 @@ export const signOutUser = async () => {
   } catch (error) {
     console.log(error, "Failed to sign out user");
     throw error
-  } finally {
-    redirect(urls.basePath);
-  }
+  } 
+  // finally {
+  //   redirect(urls.basePath);
+  // }
 };
 
 export const signInUser = async ({ email }: { email: string }): Promise<{ success: boolean;  accountId?: string; error?: string }> => {
