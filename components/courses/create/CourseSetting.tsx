@@ -8,11 +8,22 @@ import { cn } from '@/lib/utils'
 import StatusSelect from './StatusSelect'
 import { appwriteConfig } from '@/lib/actions/config'
 import IsFreeSetUp from './IsFreeSetup'
+import { useCreateCourse } from '@/context/CreateCourseContext'
 
-const CourseSetting = ({course, chapter}:{
-    course:Course,   chapter: Chapter
-}) => {
-    //   const [type, setType] = useState<"pricing" | "chapter" >('pricing')  
+const CourseSetting = ( ) => {
+      const {
+        currentStepIndex,
+        setCurrentStepIndex,
+        chapter,
+        setChapter,
+        chapters,
+        setChapters,
+        sections,
+        setSections,
+        section,
+        setSection,
+        course,
+      } = useCreateCourse()
 
       const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
     

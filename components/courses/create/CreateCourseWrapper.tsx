@@ -1,9 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import DeleteCard from '@/components/common/DeleteCard'
 import { Button } from '@/components/ui/button'
-import { Course } from '@/types'
 import { Trash2 } from 'lucide-react'
  
 import SlideWrapper from '@/components/shared/SlideWrapper'
@@ -12,7 +10,6 @@ import { ChapterWrapper } from './ChapterWrapper'
 import PriceForm from './PriceForm'
 import { CourseSections } from './CourseSections'
 import { useRouter } from 'next/navigation'
-import { findChapterAndSection } from '@/lib/helper'
 import CourseSetting from './CourseSetting'
 import StatusSelect from './StatusSelect'
 import { appwriteConfig } from '@/lib/actions/config'
@@ -25,6 +22,8 @@ import { useUserStore } from '@/store/useUserStore'
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+ 
+import { useCreateCourse } from '@/context/CreateCourseContext'
 
 const stepTips = {
   1: "Provide basic course information like title, description, and category.",
@@ -32,27 +31,27 @@ const stepTips = {
   3: "Add chapters to your modules; organize content by chapters.",
   4: "Set pricing details for your course or chapter.",
   5: "Configure publishing options like visibility and access.",
-  6: "Review your course and launch it when ready. Coming soon!",
+  6: "Review your course and launch it when ready.",
 };
 
-const CreateCourseWrapper = ({ course, step, chapterAlias, sectionAlias }: { course: Course, step?:number, chapterAlias?:string, sectionAlias?:string}) => {
-
-  const { section:curSectiion, chapter:curChapter } = findChapterAndSection(course, sectionAlias!, chapterAlias!);
+const CreateCourseWrapper = () => {
+  const {
+    currentStepIndex,
+    setCurrentStepIndex,
+    chapter,
+    course,
+  } = useCreateCourse()
   
-  const [currentStepIndex, setCurrentStepIndex] = useState(step||0)
-  
-  const [chapter, setChapter] = useState(curChapter || course.sections?.[0]?.chapters?.[0])
   const hasChapter = !!chapter; // this means chapter exist and is true, we only disable if chapter does not exist, hence !hasChapter |  steps 3 to 6 will only be enabled after a chapter exists.
 
   const steps = [
-    { step: 1, label: 'Basic Info', component: <CreateCourseStep1 course={course}/>, disabled: false },
-    { step: 2, label: 'Modules', component: <CourseSections course={course} setChapter={setChapter} setCurrentStepIndex={setCurrentStepIndex} />, disabled: false },
-    { step: 3, label: 'Chapters', component: <ChapterWrapper chapter={chapter} course={course}/>, disabled: !hasChapter },
-    { step: 4, label: 'Pricing', component: <PriceForm course={course}/>, disabled:  !hasChapter}, // disable if no chapter
-    { step: 5, label: 'Publish Settings', component: <CourseSetting course={course} chapter={chapter}/>, disabled:  !hasChapter},
-    { step: 6, label: 'Review & Launch', component: <div className='py-20 text-center w-full text-4xl'>Coming soon</div>, disabled:  !hasChapter },
+    { step: 1, label: 'Basic Info', component: <CreateCourseStep1 />, disabled: false },
+    { step: 2, label: 'Modules', component: <CourseSections/>, disabled: false },
+    { step: 3, label: 'Chapters', component: <ChapterWrapper/>, disabled: !hasChapter },
+    { step: 4, label: 'Pricing', component: <PriceForm />, disabled:  !hasChapter}, // disable if no chapter
+    { step: 5, label: 'Publish Settings', component: <CourseSetting  />, disabled:  !hasChapter},
+    { step: 6, label: 'Review & Launch', component: <div className='py-20 text-center w-full text-4xl'>Coming soon</div>, disabled:  !hasChapter, link:`/learning/${course.alias}?t=tutor` },
   ];
-
 
   const totalSteps = steps.length
 
@@ -71,7 +70,6 @@ const CreateCourseWrapper = ({ course, step, chapterAlias, sectionAlias }: { cou
   const { label, component } = steps[currentStepIndex]
   const {replace, push} = useRouter()
   const {user} = useUserStore()
-  
  
   const deleteCourse = async () => {
     const body = {
@@ -97,8 +95,6 @@ const CreateCourseWrapper = ({ course, step, chapterAlias, sectionAlias }: { cou
 
   return (
     <section className="w-full pt-12 ">
-
-
     <header className="px-4  border-b w-full pb-10">
         <section className="max-w-6xl mx-auto space-y-10">
             {/* Header */}
@@ -123,59 +119,67 @@ const CreateCourseWrapper = ({ course, step, chapterAlias, sectionAlias }: { cou
                 </div>
             </div>
 
-           <div className="flex items-center gap-4 mx-auto max-w-4xl overflow-x-auto">
-  <TooltipProvider>
-    {steps.map(({ step, label, disabled }, index) => {
-      const isActive = step === steps[currentStepIndex]?.step
-      const isCompleted = step < steps[currentStepIndex]?.step
+            <div className="flex items-center justify-center sm:gap-4 mx-auto max-w-4xl overflow-x-auto">
+              <TooltipProvider>
+                {steps.map(({ step, label, disabled, link }, index) => {
+                  const isActive = step === steps[currentStepIndex]?.step
+                  const isCompleted = step < steps[currentStepIndex]?.step
 
-      return (
-        <Tooltip key={step}>
-          <TooltipTrigger asChild>
-            <div
-              aria-disabled={disabled}
-              tabIndex={disabled ? -1 : 0}
-              onClick={() => {
-                if (disabled) return
-                const i = steps.findIndex(s => s.step === step)
-                if (i !== -1) {
-                  setCurrentStepIndex(i)
-                  replace(`?step=${i}`)
-                }
-              }}
-              className={`flex items-center gap-2 ${
-                disabled
-                  ? "cursor-not-allowed text-gray-400"
-                  : "cursor-pointer " +
-                    (isCompleted || isActive
-                      ? "text-primary font-semibold"
-                      : "text-muted-foreground")
-              }`}
-            >
-              <div
-                className={`w-6 h-6 rounded-full text-xs flex items-center justify-center border transition
-                  ${
-                    disabled
-                      ? "bg-gray-200 text-gray-400 border-gray-200"
-                      : isCompleted || isActive
-                      ? "bg-primary text-white border-primary"
-                      : "bg-gray-100 text-gray-500 border-gray-300"
-                  }`}
-              >
-                {step}
-              </div>
-              <span className="text-sm hidden sm:inline">{label}</span>
-              {step < 6 && <span className="w-6 h-0.5 bg-gray-300" />}
+                  return (
+                    <Tooltip key={step} >
+                      <TooltipTrigger asChild>
+                        <div
+                          aria-disabled={disabled}
+                          tabIndex={disabled ? -1 : 0}
+                          onClick={() => {
+                            if (disabled) return
+                            // TODO: later add more conditions like course.cover image is required
+                            if (link){ 
+                              push(link) 
+                              return
+                            }
+                            const i = steps.findIndex(s => s.step === step)
+                            if (i !== -1) {
+                              setCurrentStepIndex(i)
+                              replace(`?step=${i}`)
+                            }
+                          }}
+                          className={`flex items-center sm:gap-2 ${
+                            disabled
+                              ? "cursor-not-allowed text-gray-400"
+                              : "cursor-pointer " +
+                                (isCompleted || isActive
+                                  ? "text-primary font-semibold"
+                                  : "text-muted-foreground")
+                          }`}
+                        >
+                          <div
+                            className={`w-5 h-5 shrink-0 rounded-full text-xs flex items-center justify-center border transition
+                              ${
+                                disabled
+                                  ? "bg-gray-200 text-gray-400 border-gray-200"
+                                  : isCompleted || isActive
+                                  ? "bg-primary text-white border-primary"
+                                  : "bg-gray-100 text-gray-500 border-gray-300"
+                              }`}
+                          >
+                            {step}
+                          </div>
+                          <span className="text-[8px] lg:text-xs 2xl:text-sm hidden sm:inline">{label}</span>
+                          {step < 6 && <span className={` w-4 md:w-6 h-0.5 ${isCompleted || isActive
+                                  ? "bg-primary text-white border-primary":'bg-gray-300'} `} />}
+                        </div>
+                      </TooltipTrigger>
+
+
+                      <TooltipContent side="top" align="center" className="max-w-60  text-center ">
+                        <p>{stepTips[step as keyof typeof stepTips]}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )
+                })}
+              </TooltipProvider>
             </div>
-          </TooltipTrigger>
-          <TooltipContent side="top" align="center" className="max-w-xs">
-            <p>{stepTips[step as keyof typeof stepTips]}</p>
-          </TooltipContent>
-        </Tooltip>
-      )
-    })}
-  </TooltipProvider>
-</div>
 
 
         </section>

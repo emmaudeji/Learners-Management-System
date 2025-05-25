@@ -84,6 +84,7 @@ export type Section = {
   position:number;
   course: string; // ID of the related course
   chapters: Chapter[]; // Array of chapter IDs
+  courseId:string;
 
   $id?: string;
   id: string;
@@ -94,22 +95,7 @@ export type Section = {
   updatedAt?: string;
   permissions?: string[];
 };
-
-export type SectionInput = {
-  alias: string;
-  label: string;
-  course: string; // ID of the related course
-  status: StatusType;
-
-  chapters?: Chapter[]; // Array of chapter IDs
-
-  $id?: string;
-  id?: string;
-  createdBy?: CreatedBy|string,
-  createdAt?: string;
-  updatedAt?: string;
-  permissions?: string[];
-};
+ 
 
 export type Chapter = {
   alias: string;
@@ -121,6 +107,8 @@ export type Chapter = {
   imageUrl: string; 
   isFree: boolean; 
   feedbacks: string[];  
+  courseId:string;
+  sectionId:string;
   attachments?: string[];  
   
   $id?: string;

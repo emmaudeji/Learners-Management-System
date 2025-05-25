@@ -15,7 +15,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { Course, Section,  Chapter, SectionInput } from '@/types';
+import { Course, Section,  Chapter,   } from '@/types';
 import { Button } from '@/components/ui/button';
 import { CustomInput } from '@/components/shared/CustomInput';
 
@@ -59,15 +59,14 @@ async function saveSections(sections: Section[]) {
   }
 }
 
-
-export const CourseSections = ({ course, setChapter, setCurrentStepIndex }: { course: Course,
-  setChapter:Dispatch<SetStateAction<Chapter>>
-  setCurrentStepIndex:Dispatch<SetStateAction<number>> 
- }) => {
+export const CourseSections = () => {
   const {user} = useUserStore()
-// console.log({course})
+  const {
+    sections,
+    setSections,
+    course,
+  } = useCreateCourse()
 
-  const [sections, setSections] = useState<Section[]>(course.sections || []);
   const [hasChanges, setHasChanges] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [showInput, setShowInput] = useState(false);
@@ -102,13 +101,13 @@ export const CourseSections = ({ course, setChapter, setCurrentStepIndex }: { co
       let chapterToMove: Chapter | null = null;
 
       sections.forEach((section, sIndex) => {
-        const cIndex = section.chapters.findIndex((c) => `chapter-${c.alias}` === active.id);
+        const cIndex = section?.chapters.findIndex((c) => `chapter-${c.alias}` === active.id);
         if (cIndex > -1) {
           sourceSectionIndex = sIndex;
-          chapterToMove = section.chapters[cIndex];
+          chapterToMove = section?.chapters[cIndex];
         }
 
-        if (section.chapters.some((c) => `chapter-${c.alias}` === over.id)) {
+        if (section?.chapters.some((c) => `chapter-${c.alias}` === over.id)) {
           targetSectionIndex = sIndex;
         }
       });
@@ -154,8 +153,11 @@ const handleAddSection = async () => {
     course: course.id,
     status: 'ACTIVE',
     createdBy: user?.id,
+    position: sections.length,
+    courseId:course.alias
   };
-console.log({formData})
+
+  console.log({formData})
   try {
     const { data, error } = await postRequest({
       body: {
@@ -163,9 +165,9 @@ console.log({formData})
         formData,
       },
     });
-console.log({data,error})
+  console.log({data,error})
     if (error) {
-      toast.error('Failed to add section. Please try again.');
+      toast.error('Failed to add section?. Please try again.');
       return;
     }
 
@@ -186,7 +188,7 @@ console.log({data,error})
     setLoading(true)
 
     const updated = sections.map((s) =>
-      s.$id === id ? { ...s, label } : s
+      s.alias === id ? { ...s, label } : s
     );
     setSections(updated);
 
@@ -229,7 +231,7 @@ console.log({data,error})
 
 // console.log({sections})
   return (
-    <section className="flex flex-col items-center pt-8 pb-20 gap-4">
+    <section className="flex flex-col items-center pt-8 px-4 pb-20 gap-4">
       <Heading title='Course Modules and Chapters' icon={<LayoutList/>} />
       <section className="  w-full mx-auto max-w-2xl  card  space-y-3">
         <div className="space-y- ">
@@ -253,22 +255,18 @@ console.log({data,error})
                 items={sections.map((s) => `section-${s.alias}`)}
                 strategy={verticalListSortingStrategy}
               >
-                {sections.map((section, index) => (
+                {sections.map((sectionItem, index) => (
                   <SectionItem
-                    key={section.alias}
-                    section={section}
-                    course={course}
+                    key={sectionItem?.alias}
                     index={index}
                     onUpdateLabel={handleUpdateLabel}
-                    setChapter={setChapter}
-                    setCurrentStepIndex={setCurrentStepIndex}
-                    setSections={setSections}
+                    section={sectionItem!}
                   />
                 ))}
               </SortableContext>
             </DndContext>
               :
-            <p className="flex justify-self-center items-self-center text-center w-80 p-6 text-gray-600">Empty list. Start adding sections</p>
+            <p className="flex justify-self-center items-self-center text-center w-80 p-6 text-gray-600 text-sm italic">Empty list. Start adding sections</p>
           }
         </div>
 
@@ -318,24 +316,21 @@ import { CustomButton, TextButton } from '@/components/shared/CustomButton';
 import Heading from '@/components/common/Heading';
 import DeleteCard from '@/components/common/DeleteCard';
 import StatusSelect from './StatusSelect';
+import { useCreateCourse } from '@/context/CreateCourseContext';
 
 export default function SectionItem({
+  index, 
+  onUpdateLabel, 
   section,
-  course,
-  index,setChapter,
-  onUpdateLabel,setCurrentStepIndex,
-  setSections,
 }: {
-  section: Section;
-  setChapter:Dispatch<SetStateAction<Chapter>> 
-  setSections:Dispatch<SetStateAction<Section[]>> 
-  setCurrentStepIndex:Dispatch<SetStateAction<number>>
   index: number;
-  course:Course;
   onUpdateLabel: (id: string, label: string, status?:string) => void;
+  section: Section;
 }) {
   const {user} = useUserStore()
+  const {course,sections, setSections} = useCreateCourse()
 
+  // const [chapters, setChapters] = useState<Chapter[]>(section?.chapters||[])
   const {
     attributes,
     listeners,
@@ -343,7 +338,7 @@ export default function SectionItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: `section-${section.alias}` });
+  } = useSortable({ id: `section-${section?.alias}` });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -352,8 +347,8 @@ export default function SectionItem({
 
   const [expanded, setExpanded] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [sectionTitle, setSectionTitle] = useState(section.label || '');
-  const [chapters, setChapters] = useState(section?.chapters || [])
+  const [sectionTitle, setSectionTitle] = useState(section?.label || '');
+   
 
   const [error, setError] = useState('');
   const [chapterTitle, setChapterTitle] = useState('');
@@ -370,7 +365,7 @@ export default function SectionItem({
       }
       try {
         setSaving(true)
-        onUpdateLabel(section.$id!, sectionTitle.trim(), section.status);
+        onUpdateLabel(section?.alias!, sectionTitle.trim(), section?.status);
         setEditing(false);
         setError('');
           
@@ -402,11 +397,13 @@ export default function SectionItem({
     const formData = {
       alias: generateSlug(chapterTitle),
       label,
-      section: section.$id,
+      section: section?.alias,
       course: course.id,
       status: 'ACTIVE',
       createdBy: user?.id,
-      position: section.chapters.length
+      position: section?.chapters?.length,
+      courseId: course.alias,
+      sectionId: section?.alias,
     };
 
     try {
@@ -419,19 +416,19 @@ export default function SectionItem({
 
   console.log({data,error})
       if (error) {
-        toast.error('Failed to add chapter. Please try again.');
+        toast.error('Failed to add chapter?. Please try again.');
         return;
       }
 
-      setChapters(prev => [...prev, data]);
+      // setChapters(prev => [...prev, data]);
       setSections(prevSections =>
-          prevSections.map(section =>
-            section.alias === section.$id
+          prevSections.map(sectionItem =>
+            sectionItem?.alias === section?.alias
               ? {
-                  ...section,
-                  chapters: [...section.chapters, data],
+                  ...sectionItem,
+                  chapters: [...sectionItem?.chapters, data],
                 }
-              : section
+              : sectionItem
           )
         );
       setChapterTitle('');
@@ -444,31 +441,30 @@ export default function SectionItem({
     }
   };
 
-const handledeleteSection = async (documentId: string) => {
-  const body = {
-        documentId,
-        collectionId: appwriteConfig.sectionsCollectionId,
+  const handledeleteSection = async (documentId: string) => {
+    const body = {
+          documentId,
+          collectionId: appwriteConfig.sectionsCollectionId,
+        }
+    try {
+      const { success } = await deleteRequest({
+        body 
+      });
+
+      if (success) {
+        toast.success('Section deleted successfully');
+        setSections((prev) => {
+          const filteredList = prev?.filter(({alias})=>alias !== documentId)
+          return filteredList
+        })
+      } else {
+        toast.error('Section could not be deleted. Try again.');
       }
-  try {
-    const { success } = await deleteRequest({
-      body 
-    });
-
-    if (success) {
-      toast.success('Section deleted successfully');
-      setSections((prev) => {
-        const filteredList = prev?.filter(({alias})=>alias !== documentId)
-        return filteredList
-      })
-    } else {
-      toast.error('Section could not be deleted. Try again.');
+    } catch (error) {
+      console.error(error);
+      toast.error('Unhandled error. Check your network and try again.');
     }
-  } catch (error) {
-    console.error(error);
-    toast.error('Unhandled error. Check your network and try again.');
-  }
-};
-
+  };
  
   return (
     <div
@@ -504,21 +500,21 @@ const handledeleteSection = async (documentId: string) => {
         ) : (
           <>
             <p className="truncate w-full  text-sm">
-              <span className='text-gray-500'>MODULE {index + 1}. </span> <span className=' font-semibold'>{section.label}</span> 
+              <span className='text-gray-500'>MODULE {index + 1}. </span> <span className=' font-semibold'>{section?.label}</span> 
             </p>
 
             <div className="flex items-center gap-1">
               <StatusSelect
-                  currentStatus = {section.status}
-                  documentId={section.$id!}
+                  currentStatus = {section?.status}
+                  documentId={section?.alias!}
                   collectionId={appwriteConfig.sectionsCollectionId}
               />
               <PenLine size={14} className="cursor-pointer text-blue-800" onClick={() => setEditing(true)} />
               
               <DeleteCard
                 trigger={<Trash2 size={14} className="text-red-600 cursor-pointer" />}
-                onDelete={() => handledeleteSection(section.alias)}
-                text={`Are you sure you want to delete the section "${section.label}"? This action will also permanently delete all associated chapters and quizzes.`}
+                onDelete={() => handledeleteSection(section?.alias!)}
+                text={`Are you sure you want to delete the section "${section?.label}"? This action will also permanently delete all associated chapters and quizzes.`}
               />
                 <ChevronDown
                   size={20}
@@ -533,12 +529,12 @@ const handledeleteSection = async (documentId: string) => {
 
       {expanded && !editing && (
         <>
-          {chapters &&  chapters?.length > 0 ? (
+          {section?.chapters &&  section?.chapters?.length > 0 ? (
             <div className="mt-2 border-t pt-2">
-              <CourseChapters chapters={chapters} course={course} section={section} setChapter={setChapter} setCurrentStepIndex={setCurrentStepIndex}/>
+              <CourseChapters section={section} sectionIndex={index} />
             </div>
           ) : (
-            <div className="border-t my-2 pt-2 text-center text-sm text-gray-500">
+            <div className="border-t my-2 pt-2 text-center text-sm italic text-gray-500">
               Empty list. Start adding chapters
             </div>
           )}

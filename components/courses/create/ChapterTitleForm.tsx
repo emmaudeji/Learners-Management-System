@@ -27,7 +27,7 @@ const ChapterTitleForm = ({
   const [isLoading, setIsLoading] = useState(false);
  
   useEffect(() => {
-    setLabel(chapter.label)
+    if(chapter) setLabel(chapter.label)
   }, [chapter])
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

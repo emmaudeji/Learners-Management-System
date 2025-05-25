@@ -9,7 +9,7 @@ import ChapterTitleForm from './ChapterTitleForm'
 import ChapterQuizeWrapper from './ChapterQuizeWrapper'
 import ChapterAttachments from './ChapterAttachments'
 import { cn } from '@/lib/utils'
-import { ChevronDown, ChevronLeftCircle, ChevronRightCircle, Menu, Trash2 } from 'lucide-react'
+import { ArrowLeft, ChevronDown, ChevronLeftCircle, ChevronRightCircle, Menu, Plus, Trash2 } from 'lucide-react'
 import ChapterAccessToggle from './ChapterAccessToggler'
 import { appwriteConfig } from '@/lib/actions/config'
 import ChapterMediaUpload from './ChapterVideoCoverUpload'
@@ -18,16 +18,22 @@ import { toast } from 'react-toastify'
 import { useUserStore } from '@/store/useUserStore'
 import { useRouter } from 'next/navigation'
 import DeleteCard from '@/components/common/DeleteCard'
+import { useCreateCourse } from '@/context/CreateCourseContext'
 
-const ChapterContentForm = ({ chapter, course }: { chapter: Chapter, course:Course }) => {
+const ChapterContentForm = ( ) => {
+  const {user} = useUserStore()
+    const {
+    setCurrentStepIndex,
+    chapter,
+    setSections
+  } = useCreateCourse()
    
-  const [type, setType] = useState<"content"| "video"  | "quizes" | "attachments">('content') // "content" | "quizes" | "attachments"
-     const {replace, push} = useRouter()
-    const {user} = useUserStore()
+  const [type, setType] = useState<"content"| "media"  | "quizes" | "attachments">('content') // "content" | "quizes" | "attachments"
+     const {replace, refresh, push} = useRouter()
 
     const deleteChapter= async () => {
       const body = {
-            documentId:chapter.alias,
+            documentId:chapter?.alias!,
             collectionId: appwriteConfig.chaptersCollectionId,
           }
       try {
@@ -37,8 +43,22 @@ const ChapterContentForm = ({ chapter, course }: { chapter: Chapter, course:Cour
 
         if (success) {
           toast.success('Chapter deleted successfully');
+          setCurrentStepIndex(1)
+          setSections(prevSections =>
+            prevSections.map(sectionItem =>
+              sectionItem?.alias === chapter?.sectionId
+                ? {
+                    ...sectionItem,
+                    chapters: sectionItem.chapters.filter(chap => chap.alias !== chapter.alias),
+                  }
+                : sectionItem
+            )
+          );
 
-          push(`/t/${user?.id}/my-courses/${course.id}?step-1`)
+          refresh()
+
+
+          // push(`/t/${user?.id}/my-courses/${course.id}?step=1`)
         } else {
           toast.error('Chapter could not be deleted. Try again.');
         }
@@ -50,36 +70,49 @@ const ChapterContentForm = ({ chapter, course }: { chapter: Chapter, course:Cour
 
   return (
     <section  className="w-full space-y-8  ">
-        <div className=" border-b w-full pb-8 space-y-2">
-          <div className="flex justify-end gap-2 items-center w-full flex-wrap mx-auto max-w-6xl">
+        <div className=" border-b w-full pb-8 space-y-4">
+          <div className="flex px-4 text-xs sm:text-sm justify-end gap-2 items-center w-full flex-wrap mx-auto max-w-6xl">
               <Button type='button' onClick={()=>setType("content")} variant={'ghost'} className={` hover:bg-gray-100 ${type==="content" ? 'bg-green-100':''} `}>Content</Button>
               /
-              <Button type='button' onClick={()=>setType("video")} variant={'ghost'} className={` hover:bg-gray-100 ${type==="video" ? 'bg-green-100':''} `}>Video tutorial</Button>
+              <Button type='button' onClick={()=>setType("media")} variant={'ghost'} className={` hover:bg-gray-100 ${type==="media" ? 'bg-green-100':''} `}>Media</Button>
               /
               
               <Button type='button' onClick={()=>setType("quizes")} variant={'ghost'} className={` hover:bg-gray-100 ${type==="quizes" ? 'bg-green-100':''} `}>Quizes</Button>
               /
               <Button type='button' onClick={()=>setType("attachments")} variant={'ghost'} className={` hover:bg-gray-100 ${type==="attachments" ? 'bg-green-100':''} `}>Attachments</Button>
           </div>
-          <div className="mx-auto max-w-6xl flex flex-col sm:flex-row w-full sm:items-center justify-between ">
-              <ChapterAccessToggle collectionId={appwriteConfig.chaptersCollectionId} documentId={chapter.alias} initialValue={chapter.isFree} />
-              <DeleteCard
-                onDelete={deleteChapter}
-                trigger={
-                  <Button variant="outline" className="border border-red-500 text-red-500 hover:bg-red-50 hover:text-red-700 transition">
-                  Delete Chapter<Trash2 className="h-4 w-4" />
-                  </Button>
-                }
-              />
+          <div className="mx-auto px-4 max-w-6xl flex flex-col gap-4 sm:flex-row w-full sm:items-center justify-between ">
+              <ChapterAccessToggle collectionId={appwriteConfig.chaptersCollectionId} documentId={chapter?.alias!} initialValue={chapter?.isFree!} />
+
+              <div className="flex justify-end w-full gap-0.5 items-center ">
+                <Button 
+                  onClick={()=>{
+                    setCurrentStepIndex(1)
+                    replace('?step=1')
+                  }}
+                  variant={'ghost'} 
+                  className='border-primary hover:bg-primary/5 text-primary'>
+                  <Plus/> Add chapter
+                </Button>
+
+                <DeleteCard
+                  onDelete={deleteChapter}
+                  trigger={
+                    <Button variant="ghost" className=" p-0 text-red-500 hover:bg-red-50 hover:text-red-700 transition">
+                    <Trash2 className="h-4 w-4" /> Delete Chapter
+                    </Button>
+                  }
+                  />
+              </div>
           </div>
         </div>
 
         <div className="space-y-8 px-4 sm:px-6 lg:px-10 mx-auto max-w-4xl">
-            <ChapterTitleForm chapter={chapter} type='chapter' />
+            <ChapterTitleForm chapter={chapter!} type='chapter' />
 
              {
               type==="content" ? 
-               <ContentEditor chapter={chapter}/>
+               <ContentEditor chapter={chapter!}/>
               :
               type==="quizes" ? 
               <div className="space-y-2">
@@ -90,19 +123,19 @@ const ChapterContentForm = ({ chapter, course }: { chapter: Chapter, course:Cour
                   <p className="text-gray-600">Add a new question or update existing one.</p>
                 </div>
 
-                 <ChapterQuizeWrapper chapter={chapter} />
+                 <ChapterQuizeWrapper chapter={chapter!} />
             </div>
               :
               type==="attachments" ? 
-              <ChapterAttachments chapter={chapter}/>
+              <ChapterAttachments chapter={chapter!}/>
               : 
-              type==="video" ? 
-              <ChapterMediaUpload chapter={chapter}/>
+              type==="media" ? 
+              <ChapterMediaUpload chapter={chapter!}/>
               : null
              }
         </div>
       {/* Placeholder for future extensibility */}
-      {/* <AttachmentsForm chapterId={chapter.id} /> */}
+      {/* <AttachmentsForm chapterId={chapter?.id} /> */}
       {/* <ChapterResourcesForm /> */}
     </section>
   )
@@ -111,17 +144,18 @@ const ChapterContentForm = ({ chapter, course }: { chapter: Chapter, course:Cour
 export default ChapterContentForm
  
 
-export const ChapterWrapper = ({ chapter, course }: { chapter: Chapter, course: Course }) => {
+export const ChapterWrapper = ()  => {
+  const {
+    chapter,
+  } = useCreateCourse()
   const [slideOut, setSlideOut] = useState(true);
-  const [currentChapter, setCurrentChapter] = useState<Chapter>(chapter);
+  const [currentChapter, setCurrentChapter] = useState<Chapter>(chapter!);
 
   return (
     <section className="md:flex relative">
       {/* Sidebar - Mobile */}
       <ChaptersSideNav
-        setChapter={setCurrentChapter}
-        chapter={currentChapter}
-        course={course}
+ 
         setSlideOut={setSlideOut}
         slideOut={slideOut}
         clasName="absolute top-0 z-10 bg-white md:hidden shadow border-r"
@@ -129,9 +163,7 @@ export const ChapterWrapper = ({ chapter, course }: { chapter: Chapter, course: 
 
       {/* Sidebar - Desktop */}
       <ChaptersSideNav
-        setChapter={setCurrentChapter}
-        chapter={currentChapter}
-        course={course}
+ 
         setSlideOut={setSlideOut}
         slideOut={slideOut}
         clasName="max-md:hidden"
@@ -148,10 +180,10 @@ export const ChapterWrapper = ({ chapter, course }: { chapter: Chapter, course: 
           <ChevronRightCircle
             className={`w-6 h-6 ${slideOut ? "rotate-180" : ""} transition-all duration-500 ease`}
           />
-          {!slideOut && <p>Sections</p>}
+          {!slideOut && <small>Modules</small>}
         </button>
 
-        <ChapterContentForm chapter={currentChapter} course={course} />
+        <ChapterContentForm   />
       </article>
     </section>
   );
@@ -163,17 +195,18 @@ export const ChaptersSideNav = ({
   slideOut,
   clasName,
   setSlideOut,
-  course,
-  chapter,
-  setChapter,
+ 
 }: {
   slideOut: boolean;
   clasName: string;
   setSlideOut: Dispatch<SetStateAction<boolean>>;
-  course: Course;
-  chapter: Chapter;
-  setChapter: Dispatch<SetStateAction<Chapter>>;
+ 
 }) => {
+    const {
+    chapter,
+    setChapter,
+    course,
+  } = useCreateCourse()
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
 
   const toggleSection = (alias: string) => {
@@ -193,7 +226,7 @@ export const ChaptersSideNav = ({
     >
       <button
         onClick={() => setSlideOut((prev) => !prev)}
-        className="flex justify-end pt-3 pr-3 md:hidden"
+        className="flex justify-self-end pt-3 pr-3   md:hidden"
         aria-label="Toggle Sidebar"
       >
         <ChevronLeftCircle className="w-6 h-6 hover:text-gray-700 text-gray-400" />

@@ -45,7 +45,7 @@ export default function DeleteCard({ text, onDelete, onCancel, trigger }: Confir
         <h4 className="text-2xl font-semibold">Confirm Deletion</h4>
       </div>
 
-      <p className="text-  text-gray-700">
+      <div className="text-  text-gray-700">
         {
             text ?
             <>
@@ -54,7 +54,7 @@ export default function DeleteCard({ text, onDelete, onCancel, trigger }: Confir
             :
             <>Are you sure you want to delete the item? <p>This action cannot be undone.</p></>
         }
-      </p>
+      </div>
 
       <div className="flex justify-end gap-3 pt-4">
         <Button

@@ -5,6 +5,7 @@ import { CustomButton } from "@/components/shared/CustomButton";
 import { CustomInput } from "@/components/shared/CustomInput";
 import { Button } from "@/components/ui/button";
 import { fields } from "@/constants";
+import { useCreateCourse } from "@/context/CreateCourseContext";
 import { appwriteConfig } from "@/lib/actions/config";
 import { Course } from "@/types";
 import { putRequest } from "@/utils/api";
@@ -14,7 +15,8 @@ import { toast } from "react-toastify";
 
 const AVAILABLE_CURRENCIES = ["USD", "EUR", "NGN", "GBP"];
 
-const PriceForm = ({ course }: { course: Course }) => {
+const PriceForm = ( ) => {
+  const {course,} = useCreateCourse()
   const initialPrice = course?.price?.price || 0;
   const initialCurrency = course?.price?.currency || "USD";
 

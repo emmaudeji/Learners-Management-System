@@ -17,10 +17,11 @@ import DescriptionForm from './DescriptionForm'
 import CoverImageForm from './CoverImageForm'
  
 import { CourseObjectivesForm } from './CourseObj'
+import { useCreateCourse } from '@/context/CreateCourseContext'
 
-const CreateCourseStep1 = ({course}:{
-  course:Course
-}) => {
+const CreateCourseStep1 = () => {
+    const {course,} = useCreateCourse()
+    
   const [form, setForm] = useState({
     title: '',
     description: '',
