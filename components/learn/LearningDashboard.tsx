@@ -2,10 +2,12 @@
 
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ChevronLeftCircle, ChevronRightCircle, Video } from "lucide-react";
+import { ChevronDown, ChevronLeftCircle, ChevronRightCircle, NotebookText, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotesEditor } from "./TakeNotes";
 import { CourseOverview } from "./CourseOverview";
+import { PopoverMenu } from "../shared/PopoverMenu";
+import { Button } from "../ui/button";
 
 const courseModules = [
   {
@@ -42,7 +44,7 @@ const chapterDetails: Record<
     attachments: ["slides.pdf"],
   },
   "2": {
-    videoUrl: "/videos/navigation.mp4",
+    videoUrl: " ",
     content: "Here's how to navigate...",
     qna: [],
     notes: "",
@@ -175,23 +177,151 @@ export default function LearnerDashboard() {
   );
 }
 
-const LearnersSidebar = ({
-  slideOut,
-  className,
-  setSlideOut,
-  setSelectedChapterId,
-  selectedChapterId,
-}: {
+ 
+
+interface Chapter {
+  id: string;
+  title: string;
+  videoUrl?: string;
+}
+
+interface Module {
+  title: string;
+  chapters: Chapter[];
+}
+
+interface LearnersSidebarProps {
   slideOut: boolean;
   className: string;
   setSlideOut: Dispatch<SetStateAction<boolean>>;
   selectedChapterId: string;
   setSelectedChapterId: Dispatch<SetStateAction<string>>;
-}) => {
+}
+
+interface ModuleCardProps {
+  module: Module;
+  selectedChapterId: string;
+  setSelectedChapterId: Dispatch<SetStateAction<string>>;
+}
+
+const ModuleCard = ({ module, selectedChapterId, setSelectedChapterId }: ModuleCardProps) => {
+  const [drop, setDrop] = useState(false);
+
+  return (
+    <div className="w-full">
+      <div onClick={() => setDrop((p) => !p)} className="px-4 py-2 cursor-pointer">
+        <div className="flex justify-between items-center gap-4">
+          <h6 className="text-sm text-muted-foreground flex-1">{module.title}</h6>
+          <ChevronDown
+            size={24}
+            className={cn("text-gray-500 shrink-0 transition-transform duration-300", {
+              "rotate-180": drop,
+            })}
+          />
+        </div>
+        <small className="text-xs text-muted-foreground">4/6 · 37 mins</small>
+      </div>
+
+      {drop && (
+        <div className="space-y- bg-white">
+          {module.chapters.map((chapter, i) => (
+            <div
+              key={chapter.id}
+              className={cn(
+                "hover:bg-primary/5",
+                selectedChapterId === chapter.id && "bg-primary/10 text-primary font-medium"
+              )}
+            >
+              <div
+                onClick={() => setSelectedChapterId(chapter.id)}
+                className="px-4 py-4 flex items-center gap-3 border-b cursor-pointer"
+              >
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // TODO: mark as completed
+                  }}
+                  className="size-4 border shrink-0 border-primary hover:bg-primary/10"
+                  aria-label="Mark as complete"
+                />
+
+                <div className="flex-1 flex gap-2 items-start">
+                  <small className="pt-0.5 shrink-0">{i + 1}.</small>
+                  <div className="flex-1">
+                    <p className="font-medium truncate text-sm pb-1">{chapter.title}</p>
+                    <div className="flex justify-between items-center">
+                      <div className="flex gap-1 text-muted-foreground items-center text-xs">
+                        {chapter.videoUrl ? (
+                          <Video className="w-4 h-4" aria-hidden="true" />
+                        ) : (
+                          <NotebookText className="w-4 h-4" aria-hidden="true" />
+                        )}
+                        <span>15 mins</span>
+                      </div>
+
+                      <PopoverMenu
+                        className="max-w-60 text-sm divide-y space-y-2 py-2"
+                        align="end"
+                        trigerBtn={
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="opacity-70 hover:opacity-90 border-primary h-7 text-sm rounded text-primary hover:text-primary duration-300"
+                          >
+                            Resources
+                            <ChevronDown size={14} />
+                          </Button>
+                        }
+                      >
+                        {["Resources one", "Resources two", "Resources three"].map((item, index) => (
+                          <div key={index} className="p-3 whitespace-normal break-words">
+                            {item}
+                          </div>
+                        ))}
+                      </PopoverMenu>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const LearnersSidebar = ({
+  slideOut,
+  className,
+  setSlideOut,
+  selectedChapterId,
+  setSelectedChapterId,
+}: LearnersSidebarProps) => {
+  const courseModules: Module[] = [
+    {
+      title: "Introduction Module",
+      chapters: [
+        { id: "1", title: "Getting Started", videoUrl: "video.mp4" },
+        { id: "2", title: "Course Overview" },
+      ],
+    },
+    {
+      title: "Advanced Concepts",
+      chapters: [
+        { id: "3", title: "Deep Dive", videoUrl: "video.mp4" },
+        { id: "4", title: "Practical Examples" },
+      ],
+    },
+  ];
+
   return (
     <div
       className={cn(
-        `min-h-screen overflow-auto bg-muted border-r transition-all duration-500 ease-in-out`,
+        `min-h-screen overflow-auto bg-slate-50 border-r transition-all duration-500 ease-in-out`,
         slideOut ? "w-80 lg:w-96" : "w-0",
         className
       )}
@@ -214,38 +344,18 @@ const LearnersSidebar = ({
           <h5 className="text-lg font-semibold">Course Name</h5>
         </div>
 
-        <div className="px-4">
+        <div className="divide-y">
           {courseModules.map((module, i) => (
-            <div key={i}>
-              <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                {module.title}
-              </h4>
-              <div className="space-y-1">
-                {module.chapters.map((chapter) => (
-                  <button
-                    key={chapter.id}
-                    onClick={() => setSelectedChapterId(chapter.id)}
-                    className={cn(
-                      "w-full text-left p-2 rounded-lg text-sm hover:bg-primary/10",
-                      selectedChapterId === chapter.id &&
-                        "bg-primary/10 text-primary font-medium"
-                    )}
-                    aria-label={`Open ${chapter.title}`}
-                  >
-                    <Video className="w-4 h-4 inline-block mr-2" aria-hidden="true" />
-                    {chapter.title}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <ModuleCard
+              key={i}
+              module={module}
+              selectedChapterId={selectedChapterId}
+              setSelectedChapterId={setSelectedChapterId}
+            />
           ))}
         </div>
       </div>
     </div>
   );
 };
-
-
-
-
 
