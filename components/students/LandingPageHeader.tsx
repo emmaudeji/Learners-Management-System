@@ -2,12 +2,21 @@
 
 import { useUserStore } from '@/store/useUserStore'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StudentOnboardingModal } from './StudentOnboarding'
+import { getCurrentUser } from '@/lib/actions/user.actions'
 
 const LandingPageHeader = () => {
-  const { user } = useUserStore()
-console.log({user})
+  const { user, setUser } = useUserStore()
+  useEffect( () => {
+    const fetchU = async () => {
+      const user = await getCurrentUser()
+      setUser(user!)
+    }
+    fetchU()
+  }, [ ])
+  
+// console.log({user})
   if(!user) return null
 
   const fullName = user?.fullName || 'User'

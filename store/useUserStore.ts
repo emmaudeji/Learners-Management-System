@@ -50,7 +50,6 @@ interface UserState {
 
 export const useUserStore = create<UserState>()(
   devtools(
-    persist(
       (set) => ({
         user: null,
         isLoggedIn: false,
@@ -64,9 +63,5 @@ export const useUserStore = create<UserState>()(
         },
 
       }),
-      {
-        name: 'user-store',
-      }
-    )
   )
 );

@@ -101,16 +101,18 @@ export default function LearnerDashboard() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
           <TabsList
-            className="bg-background h-12 lg:h-14 w-full overflow-auto border-b flex justify-start max-w-3xl mx-auto"
+            className="bg-background h-12 lg:h-14 w-full overflow-auto border-b flex justify-start max-w-5xl mx-auto"
             aria-label="Learning tabs"
           >
             {[
+              { value: "overview", label: "Overview" },
               { value: "content", label: "Content" },
               { value: "qna", label: "Q&A" },
               { value: "notes", label: "Notes" },
-              { value: "overview", label: "Overview" },
               { value: "tools", label: "Learning Tools" },
               { value: "attachments", label: "Resources" },
+              { value: "announcement", label: "Announcement" },
+              { value: "messaging", label: "Messaging" },
             ].map(({ value, label }) => (
               <TabsTrigger
                 key={value}
@@ -149,6 +151,14 @@ export default function LearnerDashboard() {
 
           <TabsContent value="tools" className="p-4 overflow-y-auto flex-1">
             <p className="text-muted-foreground italic">Learning tools such as quizzes, flashcards, etc.</p>
+          </TabsContent>
+
+           <TabsContent value="announcement" className="p-4 overflow-y-auto flex-1">
+            <p className="text-muted-foreground italic">There are no announcement for now</p>
+          </TabsContent>
+
+           <TabsContent value="messaging" className="p-4 overflow-y-auto flex-1">
+            <p className="text-muted-foreground italic">Messaging ...</p>
           </TabsContent>
 
           <TabsContent value="attachments" className="p-4 overflow-y-auto flex-1">
