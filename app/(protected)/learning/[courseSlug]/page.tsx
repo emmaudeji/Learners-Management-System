@@ -1,4 +1,4 @@
-import LearnerDashboard from '@/components/courses/learn/LearningDashboard'
+import LearnerDashboard from '@/components/learn/LearningDashboard'
 import React from 'react'
 
 const CourseLearningPage = async ({params,searchParams}:{
@@ -9,7 +9,7 @@ const CourseLearningPage = async ({params,searchParams}:{
     const documentId = (await params).courseSlug
     const isTutor = (await searchParams).t
   return (
-    <LearnerDashboard />
+    <LearnerDashboard/>
   )
 }
 

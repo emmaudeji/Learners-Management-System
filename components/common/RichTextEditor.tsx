@@ -7,7 +7,7 @@ import clsx from 'clsx'
 import 'react-quill-new/dist/quill.snow.css';
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false })
 
-const modules = {
+const cModules = {
   toolbar: [
     // Font family and size
     [{ font: [] }, { size: ['small', false, 'large', 'huge'] }],
@@ -74,12 +74,14 @@ interface RichTextEditorProps {
   className?: string
   placeholder?: string
   disabled?: boolean
+  modules?:any
 }
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
   onChange,
   className,
   disabled,
+  modules=cModules,
   placeholder = "Write your content here..."
 }) => {
   const [isMounted, setIsMounted] = useState(false)

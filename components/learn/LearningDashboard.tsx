@@ -4,6 +4,8 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ChevronLeftCircle, ChevronRightCircle, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NotesEditor } from "./TakeNotes";
+import { CourseOverview } from "./CourseOverview";
 
 const courseModules = [
   {
@@ -97,15 +99,26 @@ export default function LearnerDashboard() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
           <TabsList
-            className="bg-background h-12 lg:h-14 w-full overflow-auto border-b flex justify-start"
+            className="bg-background h-12 lg:h-14 w-full overflow-auto border-b flex justify-start max-w-3xl mx-auto"
             aria-label="Learning tabs"
           >
-            <TabsTrigger value="content" aria-label="View chapter content">Content</TabsTrigger>
-            <TabsTrigger value="qna" aria-label="View Q&A section">Q&amp;A</TabsTrigger>
-            <TabsTrigger value="notes" aria-label="View personal notes">Notes</TabsTrigger>
-            <TabsTrigger value="overview" aria-label="View chapter overview">Overview</TabsTrigger>
-            <TabsTrigger value="tools" aria-label="View learning tools">Learning Tools</TabsTrigger>
-            <TabsTrigger value="attachments" aria-label="View resources and attachments">Resources</TabsTrigger>
+            {[
+              { value: "content", label: "Content" },
+              { value: "qna", label: "Q&A" },
+              { value: "notes", label: "Notes" },
+              { value: "overview", label: "Overview" },
+              { value: "tools", label: "Learning Tools" },
+              { value: "attachments", label: "Resources" },
+            ].map(({ value, label }) => (
+              <TabsTrigger
+                key={value}
+                value={value}
+                aria-label={`View ${label.toLowerCase()}`}
+                className="data-[state=active]:bg-primary data-[state=active]:text-white rounded-none px-4 py-2 transition-colors"
+              >
+                {label}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
           <TabsContent value="content" className="p-4 overflow-y-auto flex-1">
@@ -125,11 +138,11 @@ export default function LearnerDashboard() {
           </TabsContent>
 
           <TabsContent value="notes" className="p-4 overflow-y-auto flex-1">
-            <p className="text-muted-foreground italic">Note taking section will appear here...</p>
+             <NotesEditor initialValue="" onSave={()=>{}}/>
           </TabsContent>
 
           <TabsContent value="overview" className="p-4 overflow-y-auto flex-1">
-            <p className="text-muted-foreground italic">Chapter overview and goals...</p>
+            <CourseOverview  />
           </TabsContent>
 
           <TabsContent value="tools" className="p-4 overflow-y-auto flex-1">
@@ -178,7 +191,7 @@ const LearnersSidebar = ({
   return (
     <div
       className={cn(
-        `h-screen overflow-auto bg-muted border-r transition-all duration-500 ease-in-out`,
+        `min-h-screen overflow-auto bg-muted border-r transition-all duration-500 ease-in-out`,
         slideOut ? "w-80 lg:w-96" : "w-0",
         className
       )}
@@ -231,3 +244,8 @@ const LearnersSidebar = ({
     </div>
   );
 };
+
+
+
+
+
