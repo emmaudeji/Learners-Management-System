@@ -114,17 +114,43 @@ interface RichTextReadProps {
   className?: string
 }
 
-export const RichTextRead: React.FC<RichTextReadProps> = ({
-  content,
-  className,
-}) => {
+// export const RichTextRead: React.FC<RichTextReadProps> = ({
+//   content,
+//   className,
+// }) => {
+//   return (
+//     <div
+//       className={clsx(
+//         'prose prose-lg max-w-none prose-slate dark:prose-invert',
+//         className
+//       )}
+//       dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
+//     />
+//   )
+// }
+// 'use client'
+
+ 
+
+interface RichTextReadProps {
+  content: string;
+  className?: string;
+}
+
+export function RichTextRead({ content, className }: RichTextReadProps) {
+  const [sanitized, setSanitized] = useState('');
+
+  useEffect(() => {
+    // DOMPurify only works in the browser
+    if (typeof window !== 'undefined') {
+      setSanitized(DOMPurify.sanitize(content));
+    }
+  }, [content]);
+
   return (
     <div
-      className={clsx(
-        'prose prose-lg max-w-none prose-slate dark:prose-invert',
-        className
-      )}
-      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
+      className={className}
+      dangerouslySetInnerHTML={{ __html: sanitized }}
     />
-  )
+  );
 }

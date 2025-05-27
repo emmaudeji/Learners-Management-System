@@ -50,7 +50,7 @@ export interface DeletePayload {
 }
 
 interface CreatedBy {
-  id:string, fullName:string
+  id:string, fullName:string, avatar?:string, email?:string
 }
 
 export type Course = {
@@ -58,13 +58,17 @@ export type Course = {
 
   title: string;
   description: string;
-  sections: Section[];  
-  
+  sections: Section[];
+    
+  enrollments?:number;
+  count?:number;
+  rating?:number;
    
   reviews: string[]; 
   feedbacks: string[];  
   objectives: string[];
   imageUrl: string;  
+  lastUpdate: string;  
   user: string;  
   price: Pricing;  
   isFree: boolean; 
@@ -182,6 +186,24 @@ export type Attachment = {
   tableAlias?: string
   name?: string
   security?: string
+
+  id?: string;
+  $id?: string;
+  createdBy?: CreatedBy,  // relationship to 'users' table
+  status?: StatusType;
+  createdAt?: string;
+  $createdAt?: string;
+  updatedAt?: string;
+  permissions?: string[];
+}
+
+type NoteType = 'LECTURE'|'PERSONAL';
+
+export interface Note {
+  alias: string;
+  note: string;
+  courseId: string;
+  type: NoteType;
 
   id?: string;
   $id?: string;

@@ -6,32 +6,70 @@ import { Button } from '@/components/ui/button' // assuming you're using shadcn/
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 // import { Separator } from '@/components/ui/separator'
 import { RichTextEditor } from '../common/RichTextEditor'
+import { postRequest, putRequest } from '@/utils/api'
+import { appwriteConfig } from '@/lib/actions/config'
+import { useUserStore } from '@/store/useUserStore'
+import { useLearn } from '@/context/LearningContext'
+import { generateSlug } from '@/lib/helper'
+import { toast } from 'react-toastify'
+import { fields } from '@/constants'
+import { CustomButton } from '../shared/CustomButton'
 
-interface NotesEditorProps {
-  initialValue?: string
-  onSave: (value: string) => void
-  title?: string
-  editable?: boolean
-}
+ 
 
-export const NotesEditor: React.FC<NotesEditorProps> = ({
-  initialValue = '',
-  onSave,
-  title = 'Notes',
-  editable = true
-}) => {
-  const [note, setNote] = useState(initialValue)
-  const [editing, setEditing] = useState(false)
+export const NotesEditor = () => {
+  const {user} = useUserStore()
+  const {course, initialNote:initNote} = useLearn()
 
-  const handleSave = () => {
-    onSave(note)
-    setEditing(false)
-    // api call
+  const [note, setNote] = useState(initNote?.note||'')
+  const [initialNote, setInitialNote] = useState(initNote)
+  const [saving, setSaving] = useState(false)
+
+  const handleSave = async () => {
+    try {
+      setSaving(true)
+      const {data, error} = 
+        !initialNote ? await postRequest({
+              body: {
+                collectionId:appwriteConfig.notesCollectionId,
+                fields:fields.note,
+                formData:{
+                  note,
+                  createdBy: user?.id,
+                  ownerId: user?.id,
+                  courseId:course.id,
+                  type:'LECTURE',
+                  alias: generateSlug(note),
+                }
+              }
+            })
+          :
+          await putRequest({
+              body: {
+                collectionId:appwriteConfig.notesCollectionId,
+                documentId: initialNote.alias,
+                fields:fields.note,
+                formData:{
+                  note,
+                }
+              }
+            })
+      console.log({data,error})
+      if(!error) {
+        setInitialNote(data)
+        toast.success('Note saved!')
+      } else {
+        toast.error('Note was not saved, check your network and try again')
+      }
+    } catch (error) {
+        toast.error('Note was not saved, check your network and try again')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleCancel = () => {
-    setNote(initialValue)
-    setEditing(false)
+    setSaving(false)
   }
 
   return (
@@ -51,9 +89,9 @@ export const NotesEditor: React.FC<NotesEditorProps> = ({
             
             <div className="flex justify-end space-x-2  ">
               
-              <Button  onClick={handleSave}>
+              <CustomButton isLoading={saving} onClick={handleSave}>
                 Save Note
-              </Button>
+              </CustomButton>
             </div>
 
         </div>

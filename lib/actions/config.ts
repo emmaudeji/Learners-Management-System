@@ -16,6 +16,7 @@ export const appwriteConfig = {
   feedbacksCollectionId: process.env.NEXT_PUBLIC_APPWRITE_FEEDBACKS_ID as string,
   progressCollectionId: process.env.NEXT_PUBLIC_APPWRITE_PROGRESS_ID as string,
   attachmentsCollectionId: process.env.NEXT_PUBLIC_APPWRITE_ATTACHMENTS as string,
+  notesCollectionId: process.env.NEXT_PUBLIC_APPWRITE_NOTES as string,
 
   quizesCollectionId: process.env.NEXT_PUBLIC_APPWRITE_QUIZES as string,
   answersCollectionId: process.env.NEXT_PUBLIC_APPWRITE_ANSWERS as string,

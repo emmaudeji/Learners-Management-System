@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { poppins } from "../fonts/font";
 import { Karla } from "next/font/google";
 import "./globals.css";
+import { GlobalContextProvider } from "@/context/RootContext";
 
 const geistKarla = Karla({
   variable: "--font-geist-karla",
@@ -36,11 +37,13 @@ export default function RootLayout({
       <body
         className={`${geistKarla.variable} ${poppins.variable} ${montserrat.variable} font-poppins  antialiased`}
       >
-        <ToastContainer/>
-        <Suspense>
-          <AlertModal/>
-        </Suspense>
-        <main className="min-h-[60vh]">{children}</main>
+        <GlobalContextProvider>
+          <ToastContainer/>
+          <Suspense>
+            <AlertModal/>
+          </Suspense>
+          <main className="min-h-[60vh]">{children}</main>
+        </GlobalContextProvider>
       </body>
     </html>
   );

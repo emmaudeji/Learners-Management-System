@@ -4,35 +4,32 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { AosOptions } from "aos";
 import "aos/dist/aos.css";
 import { initAOS } from '@/utils/initAOS';
- 
-
+import { User } from '@/types';
+import { useUserStore } from '@/store/useUserStore';
+import { getCurrentUser } from '@/lib/actions/user.actions';
 export interface AppState {
-  // modal:  null|string;
-  // query:  null|string;
-  // setModal: (modal: null|string) => void;
-  // setQuery: (modal: null|string) => void;
-  // initAOS: (options?: Partial<AosOptions>) => void;
+  // setSectionAlias: Dispatch<SetStateAction<string>>;
+  user:User|null
 }
 
-export interface GlobalContextProps extends AppState {
-  // Add other context properties or methods here if needed in the future
-}
-
-const GlobalContext = createContext<GlobalContextProps | undefined>(undefined);
+const GlobalContext = createContext<AppState | undefined>(undefined);
 
 export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // const [modal, setModal] = useState<string|null>('');
-  // const [query, setQuery] = useState<string|null>('');
+
+  const {setUser,user} = useUserStore()
 
   // Automatically initialize AOS on mount
   useEffect(() => {
     initAOS();
+    const fetchU = async () => {
+          const user = await getCurrentUser()
+          setUser(user!)
+        }
+        fetchU()
   }, []);
 
-  const contextValue: GlobalContextProps = {
-    // modal, setModal, 
-    // query, setQuery, 
-    // initAOS,
+  const contextValue: AppState = {
+   user,
   };
 
   return (
@@ -42,7 +39,7 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
   );
 };
 
-export const useGlobal = (): GlobalContextProps => {
+export const useGlobal = (): AppState => {
   const context = useContext(GlobalContext);
   if (!context) {
     throw new Error('useGlobalContext must be used within an AppProvider');

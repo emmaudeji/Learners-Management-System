@@ -8,10 +8,12 @@ export const fields = {
     "createdBy",     // likely a user relationship
     "alias",
     "title",
+      "count",
+    "rating",
+    "lastUpdate",
     "description",
     "status",
-    "section",
-    "chapters",
+    "sections",
     "reviews",
     "feedbacks",
     "objectives",
@@ -36,6 +38,15 @@ export const fields = {
     "updatedAt",
   ],
  
+  note: [
+    "id",            // from Appwrite's document ID ($id)
+    "createdBy",     // likely a user relationship
+    "alias",
+    "note",
+    "courseId",
+    "type",
+    "ownerId",
+  ],
 }
 
 export const statuses = ["DRAFT", "ACTIVE", "ARCHIVED"] 

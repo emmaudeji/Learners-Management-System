@@ -208,6 +208,8 @@ function structureDocument<T extends Record<string, any>>(
           result["createdBy" as keyof T] = {
             id: response.createdBy.$id,
             fullName: response.createdBy.fullName,
+            avatar: response.createdBy?.avatar,
+            email: response.createdBy?.email,
           } as any;
         } else {
           result[field as keyof T] = response[field];

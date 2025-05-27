@@ -24,14 +24,18 @@ import { useUserStore } from '@/store/useUserStore'
 } from "@/components/ui/tooltip"
  
 import { useCreateCourse } from '@/context/CreateCourseContext'
+import CertificationSetupPanel from './CertificationSetupPanel'
+import CourseAnnouncement from './CourseAnnouncement'
 
 const stepTips = {
   1: "Provide basic course information like title, description, and category.",
   2: "Create and manage course modules or sections.",
   3: "Add chapters to your modules; organize content by chapters.",
-  4: "Set pricing details for your course or chapter.",
-  5: "Configure publishing options like visibility and access.",
-  6: "Review your course and launch it when ready.",
+  4: "Create certifications and badges for this course.",
+  5: "Set pricing details for your course or chapter.",
+  6: "Setup and send annuncements to learners.",
+  7: "Configure publishing options like visibility and access.",
+  8: "Review your course and launch it when ready.",
 };
 
 const CreateCourseWrapper = () => {
@@ -48,9 +52,11 @@ const CreateCourseWrapper = () => {
     { step: 1, label: 'Basic Info', component: <CreateCourseStep1 />, disabled: false },
     { step: 2, label: 'Modules', component: <CourseSections/>, disabled: false },
     { step: 3, label: 'Chapters', component: <ChapterWrapper/>, disabled: !hasChapter },
-    { step: 4, label: 'Pricing', component: <PriceForm />, disabled:  !hasChapter}, // disable if no chapter
-    { step: 5, label: 'Publish Settings', component: <CourseSetting  />, disabled:  !hasChapter},
-    { step: 6, label: 'Review & Launch', component: <div className='py-20 text-center w-full text-4xl'>Coming soon</div>, disabled:  !hasChapter, link:`/learning/${course.alias}?t=tutor` },
+    { step: 4, label: 'Certifications', component: <CertificationSetupPanel/>, disabled: !hasChapter },
+    { step: 5, label: 'Pricing', component: <PriceForm />, disabled:  !hasChapter},  
+    { step: 6, label: 'Announcement', component: <CourseAnnouncement />, disabled:  !hasChapter},  
+    { step: 7, label: 'Publish Settings', component: <CourseSetting  />, disabled:  !hasChapter},
+    { step: 8, label: 'Review & Launch', component: <div className='py-20 text-center w-full text-4xl'>Coming soon</div>, disabled:  !hasChapter, link:`/learning/${course.alias}?t=tutor` },
   ];
 
   const totalSteps = steps.length
@@ -119,7 +125,7 @@ const CreateCourseWrapper = () => {
                 </div>
             </div>
 
-            <div className="flex items-center justify-center sm:gap-4 mx-auto max-w-4xl overflow-x-auto">
+            <div className="flex items-center justify-center sm:gap-4 mx-auto max-w-4x overflow-x-auto">
               <TooltipProvider>
                 {steps.map(({ step, label, disabled, link }, index) => {
                   const isActive = step === steps[currentStepIndex]?.step

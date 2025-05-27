@@ -8,57 +8,21 @@ import { NotesEditor } from "./TakeNotes";
 import { CourseOverview } from "./CourseOverview";
 import { PopoverMenu } from "../shared/PopoverMenu";
 import { Button } from "../ui/button";
+import CertificationProgress from "./Certification";
+import LearnerMessages from "./LearnersAnnouncement";
+import CourseResources from "./CourseResources";
+import ChapterQuizPage from "./ChapterQuizes";
+import CourseContent from "./CourseContent";
+import { useLearn } from "@/context/LearningContext";
+import { Section } from "@/types";
 
-const courseModules = [
-  {
-    title: "Module 1: Introduction",
-    chapters: [
-      { id: "1", title: "Welcome to the Course" },
-      { id: "2", title: "How to Navigate the Dashboard" },
-    ],
-  },
-  {
-    title: "Module 2: Core Concepts",
-    chapters: [
-      { id: "3", title: "Understanding the Basics" },
-      { id: "4", title: "Core Techniques" },
-    ],
-  },
-];
-
-const chapterDetails: Record<
-  string,
-  {
-    videoUrl: string;
-    content: string;
-    qna: any[];
-    notes: string;
-    attachments: string[];
-  }
-> = {
-  "1": {
-    videoUrl: "/videos/welcome.mp4",
-    content: "This is the welcome chapter...",
-    qna: [],
-    notes: "",
-    attachments: ["slides.pdf"],
-  },
-  "2": {
-    videoUrl: " ",
-    content: "Here's how to navigate...",
-    qna: [],
-    notes: "",
-    attachments: [],
-  },
-  // ... add more chapters as needed
-};
 
 export default function LearnerDashboard() {
-  const [selectedChapterId, setSelectedChapterId] = useState<string>("1");
-  const [activeTab, setActiveTab] = useState<string>("content");
-  const [slideOut, setSlideOut] = useState<boolean>(true);
+  const { activeTab, setActiveTab, course} = useLearn()
+  const modules = course.sections
 
-  const currentChapter = chapterDetails[selectedChapterId];
+  // const [selectedChapterId, setSelectedChapterId] = useState<string>("1");
+  const [slideOut, setSlideOut] = useState<boolean>(true);
 
   return (
     <div className="md:flex relative h-full min-h-screen">
@@ -67,8 +31,6 @@ export default function LearnerDashboard() {
         setSlideOut={setSlideOut}
         slideOut={slideOut}
         className="absolute top-0 z-10 bg-white md:hidden shadow"
-        selectedChapterId={selectedChapterId}
-        setSelectedChapterId={setSelectedChapterId}
       />
 
       {/* Sidebar - Desktop */}
@@ -76,8 +38,6 @@ export default function LearnerDashboard() {
         setSlideOut={setSlideOut}
         slideOut={slideOut}
         className="max-md:hidden"
-        selectedChapterId={selectedChapterId}
-        setSelectedChapterId={setSelectedChapterId}
       />
 
       {/* Main content */}
@@ -109,10 +69,11 @@ export default function LearnerDashboard() {
               { value: "content", label: "Content" },
               { value: "qna", label: "Q&A" },
               { value: "notes", label: "Notes" },
-              { value: "tools", label: "Learning Tools" },
+              // { value: "tools", label: "Learning Tools" },
               { value: "attachments", label: "Resources" },
-              { value: "announcement", label: "Announcement" },
-              { value: "messaging", label: "Messaging" },
+              // { value: "instructor", label: "Instructor" },
+              { value: "messaging", label: "Messaging"},
+              { value: "certification", label: "Certification" },
             ].map(({ value, label }) => (
               <TabsTrigger
                 key={value}
@@ -126,60 +87,40 @@ export default function LearnerDashboard() {
           </TabsList>
 
           <TabsContent value="content" className="p-4 overflow-y-auto flex-1">
-            <video
-              src={currentChapter.videoUrl}
-              controls
-              className="w-full rounded-lg mb-4"
-              aria-label="Chapter video"
-            />
-            <div className="prose max-w-full">
-              <p>{currentChapter.content}</p>
-            </div>
+             <CourseContent/>
+
+            
           </TabsContent>
 
           <TabsContent value="qna" className="p-4 overflow-y-auto flex-1">
-            <p className="text-muted-foreground italic">No Q&amp;A yet. Be the first to ask a question.</p>
+            <ChapterQuizPage/>
           </TabsContent>
 
           <TabsContent value="notes" className="p-4 overflow-y-auto flex-1">
-             <NotesEditor initialValue="" onSave={()=>{}}/>
+             <NotesEditor />
           </TabsContent>
 
           <TabsContent value="overview" className="p-4 overflow-y-auto flex-1">
-            <CourseOverview  />
+            <CourseOverview setActiveTab={setActiveTab} />
           </TabsContent>
 
-          <TabsContent value="tools" className="p-4 overflow-y-auto flex-1">
+          {/* <TabsContent value="tools" className="p-4 overflow-y-auto flex-1">
             <p className="text-muted-foreground italic">Learning tools such as quizzes, flashcards, etc.</p>
-          </TabsContent>
-
-           <TabsContent value="announcement" className="p-4 overflow-y-auto flex-1">
-            <p className="text-muted-foreground italic">There are no announcement for now</p>
-          </TabsContent>
+          </TabsContent> */}
 
            <TabsContent value="messaging" className="p-4 overflow-y-auto flex-1">
-            <p className="text-muted-foreground italic">Messaging ...</p>
+            <LearnerMessages />
+          </TabsContent>
+ 
+
+          <TabsContent value="certification" className="p-4 overflow-y-auto flex-1">
+            <CertificationProgress />
           </TabsContent>
 
+          
+
           <TabsContent value="attachments" className="p-4 overflow-y-auto flex-1">
-            <ul className="list-disc pl-5">
-              {currentChapter.attachments.length ? (
-                currentChapter.attachments.map((file, i) => (
-                  <li key={i}>
-                    <a
-                      href={`/${file}`}
-                      className="text-primary underline"
-                      download
-                      aria-label={`Download resource ${file}`}
-                    >
-                      {file}
-                    </a>
-                  </li>
-                ))
-              ) : (
-                <li className="text-muted-foreground italic">No resources available</li>
-              )}
-            </ul>
+             <CourseResources />
           </TabsContent>
         </Tabs>
       </div>
@@ -187,41 +128,16 @@ export default function LearnerDashboard() {
   );
 }
 
- 
-
-interface Chapter {
-  id: string;
-  title: string;
-  videoUrl?: string;
-}
-
-interface Module {
-  title: string;
-  chapters: Chapter[];
-}
-
-interface LearnersSidebarProps {
-  slideOut: boolean;
-  className: string;
-  setSlideOut: Dispatch<SetStateAction<boolean>>;
-  selectedChapterId: string;
-  setSelectedChapterId: Dispatch<SetStateAction<string>>;
-}
-
-interface ModuleCardProps {
-  module: Module;
-  selectedChapterId: string;
-  setSelectedChapterId: Dispatch<SetStateAction<string>>;
-}
-
-const ModuleCard = ({ module, selectedChapterId, setSelectedChapterId }: ModuleCardProps) => {
+const ModuleCard = ({ module,   }: {module: Section;}) => {
+   const { setChapter, chapter,sectionAlias, setSectionAlias, setActiveTab,} = useLearn()
+  
   const [drop, setDrop] = useState(false);
 
   return (
     <div className="w-full">
-      <div onClick={() => setDrop((p) => !p)} className="px-4 py-2 cursor-pointer">
+      <div onClick={() => setDrop((p) => !p)} className={`${module.alias===sectionAlias?'bg-primary/5':''} px-4 py-2 cursor-pointer `}>
         <div className="flex justify-between items-center gap-4">
-          <h6 className="text-sm text-muted-foreground flex-1">{module.title}</h6>
+          <h6 className="text-sm text-muted-foreground flex-1">{module.label}</h6>
           <ChevronDown
             size={24}
             className={cn("text-gray-500 shrink-0 transition-transform duration-300", {
@@ -234,16 +150,20 @@ const ModuleCard = ({ module, selectedChapterId, setSelectedChapterId }: ModuleC
 
       {drop && (
         <div className="space-y- bg-white">
-          {module.chapters.map((chapter, i) => (
+          {module.chapters.map((chap, i) => (
             <div
-              key={chapter.id}
+              key={chap.alias}
               className={cn(
                 "hover:bg-primary/5",
-                selectedChapterId === chapter.id && "bg-primary/10 text-primary font-medium"
+                chapter.alias === chap.alias && "bg-primary/10 text-primary font-medium"
               )}
             >
               <div
-                onClick={() => setSelectedChapterId(chapter.id)}
+                onClick={() => {
+                  setChapter(chap)
+                  setActiveTab('content')
+                  setSectionAlias(module.alias)
+                }}
                 className="px-4 py-4 flex items-center gap-3 border-b cursor-pointer"
               >
                 <button
@@ -258,10 +178,10 @@ const ModuleCard = ({ module, selectedChapterId, setSelectedChapterId }: ModuleC
                 <div className="flex-1 flex gap-2 items-start">
                   <small className="pt-0.5 shrink-0">{i + 1}.</small>
                   <div className="flex-1">
-                    <p className="font-medium truncate text-sm pb-1">{chapter.title}</p>
+                    <p className="font-medium truncate text-sm pb-1">{chap?.label}</p>
                     <div className="flex justify-between items-center">
                       <div className="flex gap-1 text-muted-foreground items-center text-xs">
-                        {chapter.videoUrl ? (
+                        {chapter?.videoUrl ? (
                           <Video className="w-4 h-4" aria-hidden="true" />
                         ) : (
                           <NotebookText className="w-4 h-4" aria-hidden="true" />
@@ -304,29 +224,18 @@ const ModuleCard = ({ module, selectedChapterId, setSelectedChapterId }: ModuleC
   );
 };
 
+ interface LearnersSidebarProps {
+  slideOut: boolean;
+  className: string;
+  setSlideOut: Dispatch<SetStateAction<boolean>>;
+}
 export const LearnersSidebar = ({
   slideOut,
   className,
   setSlideOut,
-  selectedChapterId,
-  setSelectedChapterId,
 }: LearnersSidebarProps) => {
-  const courseModules: Module[] = [
-    {
-      title: "Introduction Module",
-      chapters: [
-        { id: "1", title: "Getting Started", videoUrl: "video.mp4" },
-        { id: "2", title: "Course Overview" },
-      ],
-    },
-    {
-      title: "Advanced Concepts",
-      chapters: [
-        { id: "3", title: "Deep Dive", videoUrl: "video.mp4" },
-        { id: "4", title: "Practical Examples" },
-      ],
-    },
-  ];
+ const {course,} = useLearn()
+ const modules = course.sections
 
   return (
     <div
@@ -355,12 +264,10 @@ export const LearnersSidebar = ({
         </div>
 
         <div className="divide-y">
-          {courseModules.map((module, i) => (
+          {modules?.map((module, i) => (
             <ModuleCard
               key={i}
               module={module}
-              selectedChapterId={selectedChapterId}
-              setSelectedChapterId={setSelectedChapterId}
             />
           ))}
         </div>
@@ -368,4 +275,4 @@ export const LearnersSidebar = ({
     </div>
   );
 };
-
+ 
