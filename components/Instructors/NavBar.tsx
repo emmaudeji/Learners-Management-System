@@ -35,7 +35,7 @@ export default function InstructorNav() {
   const {user} = useUserStore()
 
   return (
-    <nav className=" w-80 border-r min-h-[90vh] bg-white p-4 max-md:hidden ">
+    <nav className=" w-60 border-r min-h-[90vh] bg-white p-4 max-md:hidden ">
       <h5 className="text-xl font-semibold mb-6 px-2">Instructor Panel</h5>
       <ul className="space-y-1">
         {navItems.map((item) => {

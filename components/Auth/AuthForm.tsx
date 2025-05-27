@@ -10,10 +10,12 @@ import { urls } from "@/constants/admin";
 import { Loader2, Mail } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { ErrorCard } from "../common/ErrorCard";
+import { useGlobal } from "@/context/RootContext";
 
 const AuthForm = () => {
   const searchParams = useSearchParams()
   const type = searchParams.get('q') || "sign-in"
+  const {  setIsNewUser} = useGlobal()
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -56,6 +58,7 @@ const AuthForm = () => {
   
       if (response.success) {
         setAccountId(response.accountId || "");
+        type === "sign-up" && setIsNewUser(true)
       } else {
         setErrorMessage(response.error || "Authentication failed. Please try again.");
       }

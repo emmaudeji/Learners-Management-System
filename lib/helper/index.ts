@@ -1,4 +1,3 @@
-import { useUserStore } from "@/store/useUserStore";
 import { Chapter, Course, Section } from "@/types";
 
 export const generateSlug = (name: string, length: number = 6): string => {
@@ -24,10 +23,14 @@ export const generateSlug = (name: string, length: number = 6): string => {
   return slug.length <= 36 ? slug : slug.slice(0, 36); // final safeguard
 };
 
-
 export const getUrl = (path:string, id?:string) => {
-  const {user} = useUserStore()
-  return `/t/${id || user?.id}/${path}`
+  // const {user} = useUserStore()
+  return `/my-space/${path}`
+}
+
+export const getStudentUrl = (path:string, id?:string) => {
+  // const {user} = useUserStore()
+  return `/my-learning/${path}`
 }
 
 export const findChapterAndSection = (

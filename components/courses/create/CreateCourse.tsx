@@ -76,7 +76,7 @@ const CreateCourse = ( ) => {
       }
 
       toast.success('Course details saved! Proceed to next step.')
-      push(`/t/${user?.id}/my-courses/${data.id}`)
+      push(`/my-space/my-courses/${data.id}`)
 
       // Proceed to next step or reset form
     } catch (error) {
@@ -87,7 +87,7 @@ const CreateCourse = ( ) => {
   }
 
   return (
-    <section className="w-full max-w-xl space-y-6">
+    <section className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold pb-3">Add a new course</h2>
         <p className="text-sm text-muted-foreground">

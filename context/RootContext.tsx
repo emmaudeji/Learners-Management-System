@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, Dispatch, SetStateAction } from 'react';
 import { AosOptions } from "aos";
 import "aos/dist/aos.css";
 import { initAOS } from '@/utils/initAOS';
@@ -8,13 +8,15 @@ import { User } from '@/types';
 import { useUserStore } from '@/store/useUserStore';
 import { getCurrentUser } from '@/lib/actions/user.actions';
 export interface AppState {
-  // setSectionAlias: Dispatch<SetStateAction<string>>;
+  setIsNewUser: Dispatch<SetStateAction<boolean>>;
+  isNewUser:boolean
   user:User|null
 }
 
 const GlobalContext = createContext<AppState | undefined>(undefined);
 
 export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [isNewUser, setIsNewUser] = useState(false)
 
   const {setUser,user} = useUserStore()
 
@@ -30,6 +32,7 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
 
   const contextValue: AppState = {
    user,
+   isNewUser, setIsNewUser,
   };
 
   return (

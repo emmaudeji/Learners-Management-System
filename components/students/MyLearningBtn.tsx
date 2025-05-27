@@ -39,7 +39,7 @@ const MyLearningBtn = ({triger, className}:{triger?:React.ReactNode, className?:
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-     {triger ? triger :<Link href="/s/my-learning" className={cn("text-sm hover:text-primary transition",className)}>
+     {triger ? triger :<Link href="/my-learning" className={cn("text-sm hover:text-primary transition",className)}>
             My Learning
           </Link>}
 
@@ -65,7 +65,7 @@ const MyLearningBtn = ({triger, className}:{triger?:React.ReactNode, className?:
               text="You have not enrolled for any course."
               CTA={
                 <Link
-                  href="#courses"
+                  href="/#courses"
                   className="text-sm text-blue-600 underline mt-2"
                 >
                   Browse Courses

@@ -6,12 +6,12 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const navs = [
-  { label: 'All Courses', link: '/s/my-learning' },
-  { label: 'My Lists', link: '/s/my-learning/lists' },
-  { label: 'Wishlists', link: '/s/my-learning/wishlists' },
-  { label: 'Certifications', link: '/s/my-learning/certifications' },
-  { label: 'Archived', link: '/s/my-learning/archived' },
-  { label: 'Learning Tools', link: '/s/my-learning/learning-tools' },
+  { label: 'All Courses', link: '/my-learning' },
+  { label: 'My Lists', link: '/my-learning/lists' },
+  { label: 'Wishlists', link: '/my-learning/wishlists' },
+  { label: 'Certifications', link: '/my-learning/certifications' },
+  { label: 'Archived', link: '/my-learning/archived' },
+  { label: 'Learning Tools', link: '/my-learning/learning-tools' },
 ];
 
 const MyLearningHeader = () => {

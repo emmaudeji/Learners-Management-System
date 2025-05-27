@@ -1,6 +1,6 @@
 // types.d.ts
 export type StatusType = 'DRAFT'|'ACTIVE'|'ARCHIVED'
-export type RoleType = "SUPERADMIN" | "ADMIN" | "USER" | "AUTHOR" | "TEACHER";
+export type RoleType = "SUPERADMIN" | "ADMIN" | "STUDENT" | "AUTHOR" | "TEACHER";
 
 export type User = {
   $id?: string;

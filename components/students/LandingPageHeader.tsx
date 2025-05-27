@@ -5,16 +5,12 @@ import Link from 'next/link'
 import React, { useEffect } from 'react'
 import { StudentOnboardingModal } from './StudentOnboarding'
 import { getCurrentUser } from '@/lib/actions/user.actions'
+import { useGlobal } from '@/context/RootContext'
+import Image from 'next/image'
 
 const LandingPageHeader = () => {
-  const { user, setUser } = useUserStore()
-  useEffect( () => {
-    const fetchU = async () => {
-      const user = await getCurrentUser()
-      setUser(user!)
-    }
-    fetchU()
-  }, [ ])
+  const { user,   } = useUserStore()
+  const {isNewUser} = useGlobal()
   
 // console.log({user})
   if(!user) return null
@@ -28,12 +24,14 @@ const LandingPageHeader = () => {
     .slice(0, 2)
     .toUpperCase()
 
-  const isNewUser = true // !user?.onboarded // adjust this logic based on your actual flag
 
   return (
     <section className="py-10  padding flex gap-6 items-center">
-      <div className="bg-primary text-white h-20 w-20 uppercase text-xl font-bold rounded-full flex items-center justify-center">
-        {avatarText}
+      <div className="bg-primary text-white h-20 w-20 uppercase text-xl font-bold rounded-full flex items-center justify-center overflow-clip">
+        {
+          !user.avatar ? avatarText :
+          <Image src={user.avatar} alt='user image' width={100} height={100} className='size-full object-cover' />
+        }
       </div>
       <div>
         <h2 className="text-xl md:text-2xl font-semibold">

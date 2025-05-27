@@ -1,4 +1,5 @@
 import { urls } from '@/constants/admin';
+import { getStudentUrl, getUrl } from '@/lib/helper';
 import { cn } from '@/lib/utils';
 import { useUserStore } from '@/store/useUserStore';
 import Image from 'next/image';
@@ -6,12 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
-const navs = [
-  { label: 'My Learning', href: '/s/my-learning' },
-  { label: 'Messaging', href: '/s/messaging' },
-  { label: 'My Cart', href: '/s/cart' },
-  { label: 'Wishlists', href: '/s/wishlists' },
-];
+
 
 interface ProfileNavProps {
   triger?: React.ReactNode;
@@ -21,6 +17,14 @@ interface ProfileNavProps {
 const ProfileNav: React.FC<ProfileNavProps> = ({ triger, className }) => {
   const [open, setOpen] = useState(false);
   const { user, clearUser} = useUserStore();
+
+  const navs = [
+  { label: 'My Learning', href: getStudentUrl('') },
+  { label: 'My Space', href: getUrl(''), isVicible: user?.role.includes('TEACHER, ADMIN, SUPERADMIN') },
+  { label: 'Messaging', href: getStudentUrl('messaging') },
+  { label: 'My Cart', href: '/cart' },
+  { label: 'Wishlists', href: getStudentUrl('wishlists') },
+];
 
   const avatarText = user?.fullName
     ?.split(' ')
