@@ -63,6 +63,7 @@ export type Course = {
   enrollments?:number;
   count?:number;
   rating?:number;
+  category?: string;
    
   reviews: string[]; 
   feedbacks: string[];  

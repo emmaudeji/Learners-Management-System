@@ -4,19 +4,25 @@ import React, { createContext, useContext, useState, ReactNode, useEffect, Dispa
 import { AosOptions } from "aos";
 import "aos/dist/aos.css";
 import { initAOS } from '@/utils/initAOS';
-import { User } from '@/types';
+import { Course, User } from '@/types';
 import { useUserStore } from '@/store/useUserStore';
 import { getCurrentUser } from '@/lib/actions/user.actions';
 export interface AppState {
   setIsNewUser: Dispatch<SetStateAction<boolean>>;
   isNewUser:boolean
   user:User|null
+  openNav:string, setOpenNav:Dispatch<SetStateAction<string>>;
+  fallbackUrl:string, setFallbackUrl:Dispatch<SetStateAction<string>>;
+  courseItem:Course|null, setCourseItem:Dispatch<SetStateAction<Course|null>>;
 }
 
 const GlobalContext = createContext<AppState | undefined>(undefined);
 
 export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isNewUser, setIsNewUser] = useState(false)
+  const [openNav, setOpenNav] = useState('');
+  const [fallbackUrl, setFallbackUrl] = useState('');
+  const [courseItem, setCourseItem] = useState<Course|null>(null);
 
   const {setUser,user} = useUserStore()
 
@@ -33,6 +39,9 @@ export const GlobalContextProvider: React.FC<{ children: ReactNode }> = ({ child
   const contextValue: AppState = {
    user,
    isNewUser, setIsNewUser,
+   openNav, setOpenNav,
+   courseItem, setCourseItem,
+   fallbackUrl, setFallbackUrl,
   };
 
   return (

@@ -1,13 +1,14 @@
+'use client';
+
 import { urls } from '@/constants/admin';
+import { useGlobal } from '@/context/RootContext';
 import { getStudentUrl, getUrl } from '@/lib/helper';
 import { cn } from '@/lib/utils';
 import { useUserStore } from '@/store/useUserStore';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
-
-
+import React, { useRef, useState } from 'react';
 
 interface ProfileNavProps {
   triger?: React.ReactNode;
@@ -15,16 +16,22 @@ interface ProfileNavProps {
 }
 
 const ProfileNav: React.FC<ProfileNavProps> = ({ triger, className }) => {
-  const [open, setOpen] = useState(false);
-  const { user, clearUser} = useUserStore();
+  const { user, clearUser,  } = useUserStore();
+  const { push } = useRouter();
+  const {setOpenNav, openNav} = useGlobal();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const navs = [
-  { label: 'My Learning', href: getStudentUrl('') },
-  { label: 'My Space', href: getUrl(''), isVicible: user?.role.includes('TEACHER, ADMIN, SUPERADMIN') },
-  { label: 'Messaging', href: getStudentUrl('messaging') },
-  { label: 'My Cart', href: '/cart' },
-  { label: 'Wishlists', href: getStudentUrl('wishlists') },
-];
+    { label: 'My Learning', href: getStudentUrl('') },
+    {
+      label: 'My Space',
+      href: getUrl(''),
+      isVicible: user?.role.includes('TEACHER, ADMIN, SUPERADMIN'),
+    },
+    { label: 'Messaging', href: getStudentUrl('messaging') },
+    { label: 'My Cart', href: '/cart' },
+    { label: 'Wishlists', href: getStudentUrl('wishlists') },
+  ];
 
   const avatarText = user?.fullName
     ?.split(' ')
@@ -33,36 +40,36 @@ const ProfileNav: React.FC<ProfileNavProps> = ({ triger, className }) => {
     .slice(0, 2)
     .toUpperCase();
 
-    const {push} = useRouter()
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setOpenNav('profileNav');
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setOpenNav('');
+    }, 1000); // delay hiding by 200ms
+  };
 
   const handleLogout = async () => {
-    // TODO: Implement logout logic
-     const success = await clearUser();
-      if (success) push(urls.basePath);
-
+    const success = await clearUser();
+    if (success) push(urls.basePath);
   };
+
+  const dashboardUrl = user?.role.includes('STUDENT')
+    ? getStudentUrl('') : getUrl('');
 
   return (
     <div
       className="relative inline-block"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      tabIndex={0}
-      onFocus={() => setOpen(true)}
-      onBlur={(e) => {
-        // Close only if focus leaves the container and its descendants
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-          setOpen(false);
-        }
-      }}
-      aria-haspopup="true"
-      aria-expanded={open}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {triger ? (
         triger
       ) : (
         <Link
-          href="/s/my-learning"
+          href={dashboardUrl}
           className={cn(
             'text-sm hover:text-primary transition h-10 w-10 rounded-full bg-primary overflow-clip flex items-center justify-center',
             className
@@ -72,7 +79,7 @@ const ProfileNav: React.FC<ProfileNavProps> = ({ triger, className }) => {
           {user?.avatar ? (
             <Image
               src={user.avatar}
-              alt={`user's avatar`}
+              alt="user avatar"
               height={100}
               width={100}
               className="object-cover text-xs w-full h-full overflow-clip rounded-full"
@@ -85,13 +92,18 @@ const ProfileNav: React.FC<ProfileNavProps> = ({ triger, className }) => {
         </Link>
       )}
 
-      {open && (
-        <div
-          className="absolute right-0 mt-2 z-50 w-72 bg-white dark:bg-background border divide-y rounded-md shadow-xl p-4 space-y-3"
+       <div
+          className={cn(
+            'absolute right-0 mt-2 z-50 w-72 bg-white dark:bg-background border divide-y rounded-md shadow-xl p-4 space-y-3',
+            'transition-all duration-300 ease-out',
+            openNav==='profileNav' ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 translate-y-2 scale-95 pointer-events-none',
+          )}
           role="menu"
-          aria-label="User menu"
         >
-          <div className="flex gap-3 items-center pb-4">
+          <div
+            onClick={() => push(dashboardUrl)}
+            className="flex gap-3 items-center pb-4 cursor-pointer"
+          >
             {user?.avatar ? (
               <Image
                 src={user.avatar}
@@ -117,13 +129,12 @@ const ProfileNav: React.FC<ProfileNavProps> = ({ triger, className }) => {
             </div>
           </div>
 
-          <nav className="pb-4 w-full" role="none">
-            <ul className="flex flex-col space-y-0.5" role="menu">
+          <nav className="pb-4 w-full">
+            <ul className="flex flex-col space-y-0.5">
               {navs.map(({ label, href }) => (
-                <li key={href} role="none">
+                <li key={href}>
                   <Link
                     href={href}
-                    role="menuitem"
                     className="block px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                   >
                     {label}
@@ -134,13 +145,18 @@ const ProfileNav: React.FC<ProfileNavProps> = ({ triger, className }) => {
           </nav>
 
           <div className="w-full flex flex-col gap-0.5">
-            {user ? <Link 
-              type="button"
-              href={`/profile`}
-              className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-            >
-              My Account
-            </Link > : null}
+            {user && (
+              <Link
+                href={
+                  user.role === 'STUDENT'
+                    ? getStudentUrl('profile')
+                    : getUrl('profile')
+                }
+                className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+              >
+                My Account
+              </Link>
+            )}
             <button
               type="button"
               onClick={handleLogout}
@@ -150,7 +166,6 @@ const ProfileNav: React.FC<ProfileNavProps> = ({ triger, className }) => {
             </button>
           </div>
         </div>
-      )}
     </div>
   );
 };

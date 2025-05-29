@@ -1,3 +1,4 @@
+import RecommendedForYou from "@/components/courses/RecommendedForYou";
 import LandingPageHeader from "@/components/students/LandingPageHeader";
 import { getCurrentUser } from "@/lib/actions/user.actions";
 import Link from "next/link";
@@ -156,7 +157,7 @@ export default   function HomePage() {
       <LandingPageHeader/>
       <HeroSection />
       {/* <TrustedBy /> */}
-      <FeaturedCourses />
+      <RecommendedForYou />
       <HowItWorks />
       <Testimonials />
       <CallToAction />

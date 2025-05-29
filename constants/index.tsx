@@ -1,6 +1,20 @@
 
 export const fields = {
   heroBanner: ["id", "url","type","description","header", "cta","createdAt","createdBy"],
+  courselisting: [
+    "id",            // from Appwrite's document ID ($id)
+    "createdAt",     // from Appwrite's $createdAt
+    "updatedAt",     // from Appwrite's $updatedAt
+    "createdBy",     // likely a user relationship
+    "alias",
+    "title",
+      "count",
+    "rating",
+    "lastUpdate",
+    "status",
+    "imageUrl",
+    "price",
+  ],
   courses: [
     "id",            // from Appwrite's document ID ($id)
     "createdAt",     // from Appwrite's $createdAt
@@ -18,7 +32,6 @@ export const fields = {
     "feedbacks",
     "objectives",
     "imageUrl",
-    "createdBy",
     "price",
     "permissions",
   ],

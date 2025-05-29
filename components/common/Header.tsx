@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Heart, User, ChevronDown, User2, UserCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import MyLearningBtn from '../students/MyLearningBtn';
+import MyLearningBtn from './MyLearningBtn';
 import ProfileNav from './ProfileNav';
 import { useUserStore } from '@/store/useUserStore';
 
