@@ -19,10 +19,16 @@ export const appwriteConfig = {
   notesCollectionId: process.env.NEXT_PUBLIC_APPWRITE_NOTES as string,
 
   quizesCollectionId: process.env.NEXT_PUBLIC_APPWRITE_QUIZES as string,
-  answersCollectionId: process.env.NEXT_PUBLIC_APPWRITE_ANSWERS as string,
+  answersCollectionId: process.env.NEXT_PUBLIC_APPWRITE_QUIZE_RESPONSE as string,
+
+  learnersCertificatesCollectionId: process.env.NEXT_PUBLIC_APPWRITE_LEARNERS_CERTIFICATES as string,
+  badgesTemplatesCollectionId: process.env.NEXT_PUBLIC_APPWRITE_BADGES_TEMPLATES as string,
+  learnersBadgeCollectionId: process.env.NEXT_PUBLIC_APPWRITE_LEARNERS_BADGE as string,
+  certificateTemplateCollectionId: process.env.NEXT_PUBLIC_APPWRITE_CERTIFICATE_TEMPLATE as string,
 
   secretKey: process.env.APPWRITE_SECRETE_KEY as string,
 };
+
 
 export const cloudinaryConfig = {
   cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME as string,
@@ -30,3 +36,14 @@ export const cloudinaryConfig = {
   researchPreset: process.env.NEXT_PUBLIC_CLOUDINARY_RESEARCH_PRESET as string,
   secureUrl: process.env.CLOUDINARY_URL as string, // Optional: full Cloudinary URL if needed
 };
+
+
+// NEXT_PUBLIC_APPWRITE_QUIZES=682ef664001745da094e
+// NEXT_PUBLIC_APPWRITE_QUIZE_RESPONSE=682ef94500308f30fb31
+// NEXT_PUBLIC_APPWRITE_ATTACHMENTS=682f3e0800278eb6a005
+
+// NEXT_PUBLIC_APPWRITE_NOTES=6835264700235561506b
+// NEXT_PUBLIC_APPWRITE_LEARNERS_CERTIFICATES=6837108a003677d1f908
+// NEXT_PUBLIC_APPWRITE_BADGES_TEMPLATES=68371591003186769669
+// NEXT_PUBLIC_APPWRITE_LEARNERS_BADGE=683716a5000981c3c1b7
+// NEXT_PUBLIC_APPWRITE_CERTIFICATE_TEMPLATE=683718660000010718c2
