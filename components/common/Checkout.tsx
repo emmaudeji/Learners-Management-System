@@ -1,6 +1,14 @@
+'use client'
+
+import Image from 'next/image';
 import React, { useState } from 'react';
+import { Input } from '../ui/input';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { Button } from '../ui/button';
 
 type CheckoutPageProps = {
+    courseAlias:string,
   course: {
     title: string;
     instructor: string;
@@ -10,7 +18,7 @@ type CheckoutPageProps = {
   };
 };
 
-export default function CheckoutPage({ course }: CheckoutPageProps) {
+export default function CheckoutPage({ course, courseAlias }: CheckoutPageProps) {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -24,19 +32,24 @@ export default function CheckoutPage({ course }: CheckoutPageProps) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const {push} = useRouter();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implement form validation & submission logic
-    alert('Order submitted! (Demo)');
+    toast('Order submitted! (Demo)');
+    push(`/payment/success?courseId=${courseAlias}`); // Redirect to success page
+    // Reset form   
+
   };
 
   const price = course.discountPrice ?? course.price;
   const discountApplied = !!course.discountPrice;
 
   return (
-    <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-12 gap-10">
+    <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 py-20">
       {/* Left: Form */}
-      <div className="md:col-span-7 bg-white shadow-md rounded-lg p-8">
+      <div className="md:col-span-7 px-6 ">
         <h2 className="text-2xl font-semibold mb-6">Checkout</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -45,7 +58,7 @@ export default function CheckoutPage({ course }: CheckoutPageProps) {
             <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
               Full Name
             </label>
-            <input
+            <Input
               type="text"
               name="fullName"
               id="fullName"
@@ -62,7 +75,7 @@ export default function CheckoutPage({ course }: CheckoutPageProps) {
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email Address
             </label>
-            <input
+            <Input
               type="email"
               name="email"
               id="email"
@@ -83,7 +96,7 @@ export default function CheckoutPage({ course }: CheckoutPageProps) {
               <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700">
                 Card Number
               </label>
-              <input
+              <Input
                 type="text"
                 name="cardNumber"
                 id="cardNumber"
@@ -93,7 +106,7 @@ export default function CheckoutPage({ course }: CheckoutPageProps) {
                 placeholder="1234 5678 9012 3456"
                 maxLength={19}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                inputMode="numeric"
+                // InputMode="numeric"
                 pattern="[0-9\s]{13,19}"
               />
             </div>
@@ -104,7 +117,7 @@ export default function CheckoutPage({ course }: CheckoutPageProps) {
                 <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700">
                   Expiry Date
                 </label>
-                <input
+                <Input
                   type="text"
                   name="expiryDate"
                   id="expiryDate"
@@ -122,7 +135,7 @@ export default function CheckoutPage({ course }: CheckoutPageProps) {
                 <label htmlFor="cvv" className="block text-sm font-medium text-gray-700">
                   CVV
                 </label>
-                <input
+                <Input
                   type="password"
                   name="cvv"
                   id="cvv"
@@ -132,7 +145,7 @@ export default function CheckoutPage({ course }: CheckoutPageProps) {
                   placeholder="123"
                   maxLength={4}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  inputMode="numeric"
+                //   InputMode="numeric"
                   pattern="\d{3,4}"
                 />
               </div>
@@ -143,7 +156,7 @@ export default function CheckoutPage({ course }: CheckoutPageProps) {
               <label htmlFor="billingZip" className="block text-sm font-medium text-gray-700">
                 Billing ZIP / Postal Code
               </label>
-              <input
+              <Input
                 type="text"
                 name="billingZip"
                 id="billingZip"
@@ -157,27 +170,30 @@ export default function CheckoutPage({ course }: CheckoutPageProps) {
           </fieldset>
 
           {/* Submit */}
-          <button
+          <Button
+            onClick={handleSubmit}
+            disabled={!formData.fullName || !formData.email || !formData.cardNumber || !formData.expiryDate || !formData.cvv || !formData.billingZip}
             type="submit"
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-md transition"
           >
             Complete Purchase
-          </button>
+          </Button>
         </form>
       </div>
 
       {/* Right: Order Summary */}
-      <div className="md:col-span-5 bg-gray-50 rounded-lg p-6 shadow-md">
+      <div className="md:col-span-5 p-6 bg-slate-50 md:rounded-lg border ">
         <h3 className="text-xl font-semibold mb-6">Order Summary</h3>
 
         <div className="flex gap-4 items-center mb-6">
           {course.thumbnailUrl && (
-            <img
+            <Image
               src={course.thumbnailUrl}
               alt={course.title}
-              className="w-20 h-12 rounded object-cover"
-              loading="lazy"
-            />
+              className="w-20 h-12 border rounded object-cover"
+              width={80}
+              height={48}
+             />
           )}
           <div>
             <h4 className="font-semibold">{course.title}</h4>

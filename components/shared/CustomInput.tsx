@@ -14,6 +14,7 @@ interface CustomInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   icon?: React.ReactNode;
   isTextArea?: boolean;
   wrapper?:string;
+  labelStyle?:string
 }
 
 export const CustomInput: React.FC<CustomInputProps> = ({
@@ -25,6 +26,7 @@ export const CustomInput: React.FC<CustomInputProps> = ({
   className, wrapper,
   required,
   isTextArea = false,
+  labelStyle,
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +36,7 @@ export const CustomInput: React.FC<CustomInputProps> = ({
     <div className={cn("flex  flex-col gap-2 w-full",  wrapper)}>
       {label && (
         <div className="">
-          <Label htmlFor={props.name} className="flex items-center gap-1">
+          <Label htmlFor={props.name} className={cn("flex items-center text-lg gap-1", labelStyle)}>
             {label} {required && <span className="text-red-500">*</span>}
           </Label>
           {description && <small className="text-gray-500">{description}</small>}

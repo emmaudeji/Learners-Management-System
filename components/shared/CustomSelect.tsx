@@ -1,5 +1,7 @@
 import React from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "../ui/label";
+import { cn } from "@/lib/utils";
 
 interface Option {
   label: string;
@@ -20,7 +22,10 @@ interface CustomSelectProps {
   error?: string;
   placeholder?: string;
   required?: boolean;
+  isDisabled?: boolean;
   className?: string;
+  labelStyle?: string;
+  description?: string;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -33,16 +38,22 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   placeholder = "Select an option",
   required = false,
   className = "",
+  isDisabled= false,
+  labelStyle,
+  description,
 }) => {
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <label className="block text-sm font-medium mb-1">
+        <div className=" ">
+        <Label className={cn(" text-lg", labelStyle)} htmlFor={name}>
           {label} {required && <span className="text-red-500">*</span>}
-        </label>
+        </Label>
+        {description && <small className="text-gray-500 mb-3 block">{description}</small>}
+        </div>
       )}
 
-      <Select onValueChange={onChange} value={value} name={name}>
+      <Select onValueChange={onChange} value={value} name={name} disabled={isDisabled}>
         <SelectTrigger className={`w-full ${error ? "border-red-500" : ""}`}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
@@ -52,7 +63,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
               if ("options" in option) {
                 return (
                   <SelectGroup key={index}>
-                    <SelectLabel>{option.label}</SelectLabel>
+                    <SelectLabel className="font-bold text-primary py-2 border-t">{option.label}</SelectLabel>
                     {option.options.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>
                         {opt.label}

@@ -6,7 +6,7 @@ import { fields } from "@/constants";
 import { appwriteConfig } from "@/lib/actions/config";
 import { Course } from "@/types";
 import { putRequest } from "@/utils/api";
-import { Pen } from "lucide-react";
+import { Pen, X } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -19,21 +19,28 @@ const DescriptionForm = ({ course }: { course: Course }) => {
   const [isEdit, setIsEdit] = useState(!initialDescription.length);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = e.target.value;
     setDescription(value);
-    if (error && value.length >= MIN_DESCRIPTION_LENGTH) {
-      setError("");
-    } else if (e.target.value.length <= MIN_DESCRIPTION_LENGTH) {
+
+    if (value.length < MIN_DESCRIPTION_LENGTH) {
       setError("Description must be at least 15 characters.");
+    } else {
+      setError("");
     }
+  };
+
+  const handleCancel = () => {
+    setDescription(initialDescription);
+    setError("");
+    setIsEdit(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (description.trim().length < MIN_DESCRIPTION_LENGTH) {
-      setError("Description must be at least 5 characters.");
+      setError("Description must be at least 15 characters.");
       return;
     }
 
@@ -65,6 +72,8 @@ const DescriptionForm = ({ course }: { course: Course }) => {
     }
   };
 
+  const hasChanged = description !== initialDescription;
+
   return (
     <form onSubmit={handleSubmit} className="p-4 w-full bg-slate-50 rounded-md border space-y-4">
       <CustomInput
@@ -89,10 +98,20 @@ const DescriptionForm = ({ course }: { course: Course }) => {
           </button>
         )}
 
-        {isEdit && description !== initialDescription && description.length >= MIN_DESCRIPTION_LENGTH && (
-          <Button type="submit" variant="outline" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Save"}
-          </Button>
+        {isEdit && hasChanged && description.length >= MIN_DESCRIPTION_LENGTH && (
+          <div className="flex gap-3">
+            <Button type="submit" variant="outline" disabled={isLoading}>
+              {isLoading ? "Saving..." : "Save"}
+            </Button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="text-sm text-red-600 flex items-center gap-1 hover:underline"
+            >
+              <X size={14} />
+              Cancel
+            </button>
+          </div>
         )}
       </div>
     </form>

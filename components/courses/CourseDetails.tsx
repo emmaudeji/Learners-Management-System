@@ -1,12 +1,11 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
+
 import { Separator } from '@/components/ui/separator';
 // import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
-import { Star } from 'lucide-react';
 import { Course } from '@/types';
-import Link from 'next/link';
 import EnrolNowBtn from './EnrolNowBtn';
+import Image from 'next/image';
 
 const CourseDetails = ({course}:{course:Course}) => {
   return (
@@ -15,29 +14,36 @@ const CourseDetails = ({course}:{course:Course}) => {
       <div className="lg:col-span-2 space-y-10">
         {/* Course Header */}
         <section className="space-y-4">
-          <Badge className="bg-indigo-100 text-indigo-800">Course</Badge>
-          <h1 className="text-3xl font-bold leading-tight">
+          <h2 className="text-3xl font-bold leading-tight">
             {course.title || "Advanced AI Agent Systems with LangChain and LangGraph"}
-          </h1>
+          </h2>
+          <div className="flex md:hidden items-center gap-2">
+            <Image
+              src="https://via.placeholder.com/40"
+              alt="Instructor"
+              className="rounded-full"
+              height={40}
+              width={40}
+            />
+            <span className="text-sm text-muted-foreground">
+              {course.createdBy?.fullName || "Henrique Santana"}
+            </span>
+          </div>
           <p className="text-muted-foreground text-lg">
-            This course explores the use of LangChain and LangGraph for building advanced AI agent systems.
-            It introduces learners to graph theory, state machines, and agentic systems, enabling them to build
-            flexible AI-driven solutions for tasks such as knowledge retrieval using cyclical workflows.
+             {course.description}
           </p>
         </section>
 
         {/* Course Meta */}
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <span>Intermediate</span>
-          <Separator orientation="vertical" className="h-4" />
-          <span>13 hours</span>
-          <Separator orientation="vertical" className="h-4" />
-          <span>Last Updated April 25, 2025</span>
+          <Badge className="bg-indigo-100 rounded-full text-indigo-800">Intermediate</Badge>
+          <Badge className="bg-indigo-100 rounded-full text-indigo-800">13 hours</Badge>
+          <Badge className="bg-indigo-100 rounded-full text-indigo-800">Last Updated April 25, 2025</Badge>
         </div>
 
         {/* Skills You'll Learn */}
         <section>
-          <h2 className="font-semibold text-lg mb-2">Skills you'll learn</h2>
+          <h4 className="font-semibold text-lg mb-2">Skills you'll learn</h4>
           <div className="flex flex-wrap gap-2">
             {["Retrieval-Augmented Generation", "AI agents", "LangGraph", "LangChain"].map(skill => (
               <Badge key={skill} variant="outline">{skill}</Badge>
@@ -47,7 +53,7 @@ const CourseDetails = ({course}:{course:Course}) => {
 
         {/* Prerequisites */}
         <section>
-          <h2 className="font-semibold text-lg mb-2">Prerequisites</h2>
+          <h4 className="font-semibold text-lg mb-2">Prerequisites</h4>
           <ul className="list-disc list-inside text-muted-foreground">
             {["REST APIs", "OpenAI API", "Advanced Python", "Large Language Models"].map(p => (
               <li key={p}>{p}</li>
@@ -57,7 +63,7 @@ const CourseDetails = ({course}:{course:Course}) => {
 
         {/* Curriculum */}
         <section>
-          <h2 className="font-semibold text-xl mb-4">Course Lessons</h2>
+          <h4 className="font-semibold text-xl mb-4">Course Lessons</h4>
           {/* <Accordion type="single" collapsible className="w-full">
             {["Introduction to Agentic Frameworks", "Build with LLMs in LangChain", "Agentic Workflows with LangGraph", "Create a Knowledge Base Agent", "HealthBot: AI-Powered Patient Education System"].map((lesson, idx) => (
               <AccordionItem key={lesson} value={`item-${idx}`}>
@@ -75,13 +81,15 @@ const CourseDetails = ({course}:{course:Course}) => {
 
         {/* Instructor */}
         <section className="flex items-start gap-6">
-          <img
-            src="https://via.placeholder.com/120"
-            alt="Instructor"
-            className="rounded-full w-28 h-28 object-cover"
-          />
+            <Image
+              src="https://via.placeholder.com/40"
+              alt="Instructor"
+              className="rounded-full border w-20 h-20 object-cover "
+              height={200}
+              width={200}
+            />
           <div>
-            <h3 className="text-xl font-semibold">Henrique Santana</h3>
+            <h3 className="text-xl font-semibold">{course.createdBy.fullName}</h3>
             <p className="text-muted-foreground text-sm">
               Principal Machine Learning Engineer at Dell Technologies. Henrique specializes in AI implementation
               for digital businesses. He teaches AI for business leaders and explores Generative AI and LLM frameworks.
@@ -91,7 +99,7 @@ const CourseDetails = ({course}:{course:Course}) => {
 
         {/* What Makes This Course Different */}
         <section className="space-y-4">
-          <h2 className="font-semibold text-xl">The Udacity Difference</h2>
+          <h4 className="font-semibold text-xl">The HubX Difference</h4>
           <ul className="list-disc list-inside text-muted-foreground space-y-2">
             <li>Real-world projects with expert feedback</li>
             <li>Personalized career coaching and mentorship</li>
@@ -104,6 +112,10 @@ const CourseDetails = ({course}:{course:Course}) => {
       {/* Sidebar */}
       <aside className=" ">
       <section className="space-y-6 sticky top-24">
+          <div className="w-full hidden md:block h-44 bg-slate-100 rounded-md   overflow-hidden">
+            <Image src={course.imageUrl||'/'} alt='cover photo' height={400} width={500} className='object-cover size-full ' />
+          </div>
+
         <div className="p-6 border rounded-xl bg-white dark:bg-muted space-y-4">
           <h3 className="text-lg font-semibold">Pricing</h3>
           <div>

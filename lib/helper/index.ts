@@ -1,4 +1,5 @@
 import { Chapter, Course, Section } from "@/types";
+import { fetchCloudinaryMedia } from "../cloudinary";
 
 export const generateSlug = (name: string, length: number = 6): string => {
   const maxSlugLength = 36 - (length + 1); // Total must not exceed 36 chars
@@ -50,3 +51,10 @@ export const findChapterAndSection = (
 
   return { section, chapter };
 };
+
+export async function getMediaFromCloudinary(folder: string) {
+  const MEDIA_FOLDER = `lms/${folder}`;
+   
+  const media = await fetchCloudinaryMedia(MEDIA_FOLDER);
+  return media;
+}

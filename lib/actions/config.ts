@@ -33,9 +33,11 @@ export const appwriteConfig = {
 export const cloudinaryConfig = {
   cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME as string,
   apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY as string,
-  researchPreset: process.env.NEXT_PUBLIC_CLOUDINARY_RESEARCH_PRESET as string,
+  lmsPreset: process.env.NEXT_PUBLIC_CLOUDINARY_LMS_PRESET as string,
+  apiSecrete: process.env.CLOUDINARY_API_SECRET as string,
   secureUrl: process.env.CLOUDINARY_URL as string, // Optional: full Cloudinary URL if needed
 };
+
 
 
 // NEXT_PUBLIC_APPWRITE_QUIZES=682ef664001745da094e

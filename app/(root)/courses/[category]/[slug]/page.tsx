@@ -15,8 +15,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
     courseAlias, 
     fields.courses
   )
-  if(!course) redirect('/courses');
-  // If course not found, redirect to courses page
+  if(!course) redirect('/courses')
 
   return (
     <CourseDetails course={course}  />

@@ -7,8 +7,6 @@ import { Course } from '@/types'
 import Image from 'next/image'
 import Link from 'next/link'
 
-
-
 const RecommendedForYou = () => {
     // Component to show recommended courses for the user
     // This can be based on user preferences, history, or popular courses

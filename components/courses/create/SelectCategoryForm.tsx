@@ -1,37 +1,31 @@
 "use client";
 
-import { CustomInput } from "@/components/shared/CustomInput";
-import { Button } from "@/components/ui/button";
-import { fields } from "@/constants";
-import { appwriteConfig } from "@/lib/actions/config";
-import { Course } from "@/types";
-import { putRequest } from "@/utils/api";
-import { Pen, X } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { Pen, X } from "lucide-react";
 
-const MIN_TITLE_LENGTH = 5;
+import { Course } from "@/types";
+import { courseCategoryOptions } from "@/data/courseCategories";
+import CustomSelect from "@/components/shared/CustomSelect";
+import { Button } from "@/components/ui/button";
+import { putRequest } from "@/utils/api";
+import { appwriteConfig } from "@/lib/actions/config";
+import { fields } from "@/constants";
 
-const TitleForm = ({ course }: { course: Course }) => {
-  const initialTitle = course.title || "";
-  const [title, setTitle] = useState(initialTitle);
+const CategorySelectForm = ({ course }: { course: Course }) => {
+  const initialCategory = course.category || "";
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [error, setError] = useState("");
-  const [isEdit, setIsEdit] = useState(!initialTitle.length);
+  const [isEdit, setIsEdit] = useState(!initialCategory.length);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setTitle(value);
-
-    if (value.length < MIN_TITLE_LENGTH) {
-      setError("Title must be at least 5 characters.");
-    } else {
-      setError("");
-    }
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    if (value) setError("");
   };
 
   const handleCancel = () => {
-    setTitle(initialTitle);
+    setSelectedCategory(initialCategory);
     setError("");
     setIsEdit(false);
   };
@@ -39,8 +33,8 @@ const TitleForm = ({ course }: { course: Course }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (title.trim().length < MIN_TITLE_LENGTH) {
-      setError("Title must be at least 5 characters.");
+    if (!selectedCategory) {
+      setError("Please select a category.");
       return;
     }
 
@@ -51,38 +45,44 @@ const TitleForm = ({ course }: { course: Course }) => {
         body: {
           collectionId: appwriteConfig.coursesCollectionId,
           documentId: course.id,
-          formData: { title },
+          formData: { category: selectedCategory },
           fields: fields.courses,
         },
       });
 
       if (error) {
-        toast.error(error || "Failed to update title.");
-        setTitle(initialTitle);
+        toast.error(error || "Failed to update category.");
+        setSelectedCategory(initialCategory);
         return;
       }
 
-      toast.success("Title updated!");
+      toast.success("Category updated!");
       setIsEdit(false);
     } catch {
       toast.error("Something went wrong. Please try again.");
-      setTitle(initialTitle);
+      setSelectedCategory(initialCategory);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const hasChanged = title !== initialTitle;
+  const hasChanged = selectedCategory !== initialCategory;
 
   return (
     <form onSubmit={handleSubmit} className="p-4 w-full bg-slate-50 rounded-md border space-y-4">
-      <CustomInput
-        label="Course Title"
-        description="Make it short, clear, and enticing. This will be the first impression learners get."
-        value={title}
+      <CustomSelect
+        name="category"
+        label="Course Category"
+        options={courseCategoryOptions}
+        value={selectedCategory}
+        onChange={handleCategoryChange}
+        placeholder="Select a course category"
         error={error}
-        disabled={!isEdit || isLoading}
-        onChange={handleChange}
+        required
+        className="max-w-md"
+        isDisabled={!isEdit || isLoading}
+        description="Select a category that best fits your course. This helps learners find your course easily."
+        labelStyle="text-lg"
       />
 
       <div className="flex items-center justify-between">
@@ -93,11 +93,11 @@ const TitleForm = ({ course }: { course: Course }) => {
             className="flex items-center gap-1 text-sm text-green-700 hover:underline"
           >
             <Pen size={14} />
-            Edit title
+            Edit category
           </button>
         )}
 
-        {isEdit && hasChanged && title.length >= MIN_TITLE_LENGTH && (
+        {isEdit && hasChanged && (
           <div className="flex gap-3">
             <Button type="submit" variant="outline" disabled={isLoading}>
               {isLoading ? "Saving..." : "Save"}
@@ -117,4 +117,4 @@ const TitleForm = ({ course }: { course: Course }) => {
   );
 };
 
-export default TitleForm;
+export default CategorySelectForm;

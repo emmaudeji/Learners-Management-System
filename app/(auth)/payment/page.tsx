@@ -1,6 +1,7 @@
-// Example usage in a page or parent component
 
 import CheckoutPage from "@/components/common/Checkout";
+import { Footer } from "@/components/common/Footer";
+import { Header } from "@/components/common/Header";
 
 
 const courseData = {
@@ -11,6 +12,13 @@ const courseData = {
   thumbnailUrl: "https://placeimg.com/80/48/tech",
 };
 
-export default function Page() {
-  return <CheckoutPage course={courseData} />;
+export default function Page({searchParams}: { searchParams: { [key: string]: string } }) { 
+  const courseId = searchParams.courseId || ''; 
+  return (
+    <>
+      <Header/>
+      <CheckoutPage course={courseData} courseAlias={courseId}/>
+      <Footer/>
+    </>
+    );
 }

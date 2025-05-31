@@ -64,6 +64,7 @@ export type Course = {
   count?:number;
   rating?:number;
   category?: string;
+  skills?: string[];
    
   reviews: string[]; 
   feedbacks: string[];  
