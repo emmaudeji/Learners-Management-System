@@ -172,7 +172,7 @@ const CreateCourseWrapper = () => {
                             {step}
                           </div>
                           <span className="text-[8px] lg:text-xs 2xl:text-sm hidden sm:inline">{label}</span>
-                          {step < 6 && <span className={` w-4 md:w-6 h-0.5 ${isCompleted || isActive
+                          {step < steps.length && <span className={` w-4 md:w-6 h-0.5 ${isCompleted || isActive
                                   ? "bg-primary text-white border-primary":'bg-gray-300'} `} />}
                         </div>
                       </TooltipTrigger>

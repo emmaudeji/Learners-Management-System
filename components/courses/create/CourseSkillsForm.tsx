@@ -13,6 +13,7 @@ import { appwriteConfig } from "@/lib/actions/config";
 import { fields } from "@/constants";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import CardWrapper from "@/components/shared/CardWrapper";
 
 type Option = {
   label: string;
@@ -82,7 +83,8 @@ const CourseSkillsForm = ({ course }: { course: Course }) => {
   const hasChanged = JSON.stringify(skills) !== JSON.stringify(initialSkills);
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 w-full bg-slate-50 rounded-md border space-y-4">
+    <CardWrapper>
+      <form onSubmit={handleSubmit} className=" space-y-4">
       <div>
         <Label  className="text-lg">Skills you'll teach</Label >
         <small className="  text-muted-foreground mb-2 block">
@@ -140,6 +142,7 @@ const CourseSkillsForm = ({ course }: { course: Course }) => {
         )}
       </div>
     </form>
+    </CardWrapper>
   );
 };
 

@@ -33,6 +33,7 @@ import {
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
+import CardWrapper from "@/components/shared/CardWrapper";
 
 const MIN_OBJECTIVE_LENGTH = 5;
 
@@ -141,7 +142,7 @@ export const CourseObjectivesForm = ({ course }: { course: Course }) => {
   };
 
   return (
-    <div className="p-4 w-full bg-slate-50 rounded-md border space-y-4">
+    <CardWrapper className=" space-y-4">
       <CustomInput
         label="Add Course Objective"
         description="Add clear, concise learning outcomes for this course."
@@ -219,7 +220,7 @@ export const CourseObjectivesForm = ({ course }: { course: Course }) => {
           </Button>
         )}
       </div>
-    </div>
+    </CardWrapper>
   );
 };
 

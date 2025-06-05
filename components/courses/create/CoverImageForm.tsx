@@ -1,5 +1,6 @@
 "use client";
 
+import CardWrapper from "@/components/shared/CardWrapper";
 import { Button } from "@/components/ui/button";
 import { appwriteConfig } from "@/lib/actions/config";
 import { Course } from "@/types";
@@ -75,8 +76,8 @@ const CoverImageForm = ({ course }: { course: Course }) => {
   };
 
   return (
-    <div className="space-y-2 w-full">
-            <div className="">
+    <CardWrapper className="space-y-2 w-full">
+        <div className="">
             <p className="font-semibold">Cover Image</p>
             <small className="text-gray-500">This is the course preview image. Choose a quality image that aligns well with the course title.</small>
         </div>
@@ -121,7 +122,7 @@ const CoverImageForm = ({ course }: { course: Course }) => {
             </div>
         )}
         </div>
-    </div>
+    </CardWrapper>
   );
 };
 

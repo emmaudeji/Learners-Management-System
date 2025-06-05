@@ -38,7 +38,7 @@ const CreateCourseStep1 = () => {
         <div className="space-y-8 col-span-5">
           <CategorySelectForm course={course} />
           <CourseSkillsForm course={course} />
-          <CoverImageForm course={course}  />
+          {/* <CoverImageForm course={course}  /> */}
           <FileUploader course={course} />
         </div>
           

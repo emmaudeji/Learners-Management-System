@@ -13,8 +13,9 @@ export const createSessionClient = async () => {
   const session = (await cookies()).get("appwrite-session");
 
   if (!session || !session.value) {
-    console.warn("No session found, redirecting to login...");
-    throw new Error("No session found, redirecting to login...")
+    console.warn("No session found. User might not be authenticated.");
+    // Optionally, you can redirect to login or handle unauthenticated state
+    return null
   }
 
   client.setSession(session.value);
@@ -65,119 +66,90 @@ export interface PublicQueryParams {
   cache?: "revalidate" | "dynamic"; // Caching Strategy
   [key: string]: any; // Other dynamic filters
 }
+ 
+
 export const fetchPublicCollection = async <T extends Record<string, any>>(
   collectionId: string,
   params: PublicQueryParams = {},
   fields: string[] = ["createdBy"],
-  orderBy?: { attribute: string; order: "asc" | "desc" } // New order parameter
+  orderBy?: { attribute: string; order: "asc" | "desc" }
 ): Promise<{ data: T[]; tableSize: number; error: string | null }> => {
   try {
-    const url = `${appwriteConfig.endpointUrl}/databases/${appwriteConfig.databaseId}/collections/${collectionId}/documents`;
+    const { endpointUrl, databaseId, projectId } = appwriteConfig;
 
+    // Default pagination setup
     const start = params.start ?? 0;
     const limit = params.end ? params.end - start : 100;
 
+    // Base URL to fetch documents from Appwrite
+    const url = `${endpointUrl}/databases/${databaseId}/collections/${collectionId}/documents`;
+
+    // Query builder
     const queries: string[] = [
       JSON.stringify({ method: "limit", values: [limit] }),
       JSON.stringify({ method: "offset", values: [start] }),
       JSON.stringify({ method: "equal", attribute: "status", values: ["ACTIVE"] }),
-      JSON.stringify({"method":"orderDesc","attribute":"$updatedAt"}),
     ];
 
+    // Apply full-text search if provided
     if (params.search) {
       queries.push(params.search);
     }
 
-    // Apply sorting if provided
+    // Optional custom sorting
     if (orderBy) {
       const orderMethod = orderBy.order === "asc" ? "orderAsc" : "orderDesc";
       queries.push(JSON.stringify({ method: orderMethod, attribute: orderBy.attribute }));
+    } else {
+      // Default sort by most recently updated
+      queries.push(JSON.stringify({ method: "orderDesc", attribute: "$updatedAt" }));
     }
-    
-    queries.push(JSON.stringify({ method: "orderAsc" , attribute: '$updatedAt' }));
 
+    // Final query string
     const queryParams = queries.map((q) => `queries[]=${encodeURIComponent(q)}`).join("&");
 
-    // Handle cache logic correctly
+    // Set request headers and caching options
     const fetchOptions: RequestInit = {
       method: "GET",
       headers: {
-        "X-Appwrite-Project": appwriteConfig.projectId,
+        "X-Appwrite-Project": projectId,
         "Content-Type": "application/json",
       },
     };
 
-    if (params.cache === "dynamic") {
-      fetchOptions.cache = "no-cache";
-    } else if (params.cache === "revalidate") {
-      fetchOptions.next = { revalidate: settings.REVALIDATE_TIME };
-    } else {
-      fetchOptions.cache = "force-cache";
+    // Handle cache policy
+    switch (params.cache) {
+      case "dynamic":
+        fetchOptions.cache = "no-cache";
+        break;
+      case "revalidate":
+        fetchOptions.next = { revalidate: settings.REVALIDATE_TIME };
+        break;
+      default:
+        fetchOptions.cache = "force-cache";
     }
 
+    // Make the request
     const response = await fetch(`${url}?${queryParams}`, fetchOptions);
-
     if (!response.ok) throw new Error("Failed to fetch data");
 
     const result = await response.json();
-    // console.log({ result:result.documents[0] });
 
-    // Process and structure the data
-    const structuredData: T[] = result.documents.map((doc: any) => {
-      const transformedDoc: Partial<T> = {};
-
-      // Ensure "id" is explicitly set from "$id"
-      if (!fields || fields.includes("id")) {
-        transformedDoc["id" as keyof T] = doc.$id as any;
-        transformedDoc["createdAt" as keyof T] = doc.$createdAt as any;
-        transformedDoc["updatedAt" as keyof T] = doc.$updatedAt as any;
-      }
-
-      if (!fields) return { ...doc, id: doc?.$id } as T;
-
-      fields.forEach((field) => {
-        if (field === "createdBy" && doc.createdBy ) {
-          transformedDoc["createdBy" as keyof T] = {
-            // id: doc.createdBy.$id,
-            fullName: doc.createdBy.fullName,
-          } as any;
-        } else if (field === "author" && doc.author) {
-          transformedDoc["author" as keyof T] = {
-            // id: doc.createdBy.$id,
-            fullName: doc.author.fullName,
-            email: doc.author.email,
-            phone: doc.author.phone,
-            bio: doc.author.bio,
-          } as any;
-        } else if (field in doc) {
-          transformedDoc[field as keyof T] = doc[field];
-        } 
-      });
-
-      return transformedDoc as T;
-    });
-
-
-    // Optional: Remove `createdBy` if fetching blogs
-    // if (collectionId === appwriteConfig.blogsCollectionId) {
-    //   structuredData.forEach((item) => delete item["createdBy" as keyof T]);
-    // }
-
-
-    return {
-      data: structuredData,
-      tableSize: result.total || 0,
-      error: null,
-    };
+    // Clean/transform data before returning
+    const structuredData: T[] = result.documents.map((doc: any) =>
+      structureDocument<T>(doc, fields)
+    );
+    const tableSize = result.total || structuredData.length;
+    console.log({structuredData, result})
+    return { data: structuredData, tableSize, error: null };
   } catch (error: any) {
-    console.error("fetchPublicCollection Error:", {
-      message: error.message || "Unknown error",
-      stack: error.stack || "No stack trace",
-      status: error?.status || "Unknown status",
-      details: error?.details || "No additional details",
-      params,
+    console.error("Fetch public collection error:", {
+      message: error.message,
+      stack: error.stack,
+      status: error?.status,
+      details: error?.details,
     });
-    return { data: [], tableSize: 0, error: error.message || "Failed to fetch." };
+    return { data: [], tableSize: 0, error: error.message };
   }
 };
 
@@ -241,7 +213,7 @@ export const addDocument = async <T extends Record<string, any>>(
     if (!client) {
       return { success: false, error: "You are not authenticated" };
     }
-    console.log({data})
+ 
 
     const response = await client.databases.createDocument(
       appwriteConfig.databaseId,
@@ -272,7 +244,11 @@ export const updateDocument = async <T extends Record<string, any>>(
   fields?: string[] 
 ): Promise<{ success: boolean; data?: T; error?: string }> => {
   try {
-    const { databases } = await createSessionClient();
+    const client = await createSessionClient();
+    if (!client) {
+      return { success: false, error: "You are not authenticated" };
+    }
+    const databases = client.databases;
     const { createdAt, ...cleanData } = data; // strip `createdAt` if exists
 
     const response = await databases.updateDocument(
@@ -304,7 +280,11 @@ export const updateDocument = async <T extends Record<string, any>>(
 };
 
 export const deleteDocument = async (collectionId: string, documentId: string): Promise<{ success: boolean, error?:string }> => {
-  const { databases } = await createSessionClient();
+      const client = await createSessionClient();
+    if (!client) {
+      return { success: false, error: "You are not authenticated" };
+    }
+    const databases = client.databases;
 
   try {
    await databases.deleteDocument(
@@ -333,6 +313,9 @@ export const getDocumentById = async <T extends Record<string, any>>(
 ): Promise<{ data: T | null; error: string | null }> => {
   try {
     const client = await createSessionClient();
+    if (!client) {
+      return { data: null, error: "You are not authenticated" };
+    }
     const databases = client.databases;
 
     const response = await databases.getDocument(
@@ -367,8 +350,11 @@ export const fetchCollectionData = async <T extends Record<string, any>>(
   fields: string[] = ["createdBy"]
 ): Promise<{ data: T[]; tableSize: number; error: string | null }> => {
   try {
-    const client = createSessionClient();
-    const databases = (await client).databases;
+    const client = await createSessionClient();
+    if (!client) {
+      return { data: [], tableSize: 0, error: "You are not authenticated" };  
+    }
+    const databases = client.databases;
     let queries: string[] = [];
 
     const validKeys = Object.keys(params).filter((key) => fields?.includes(key));
@@ -424,7 +410,11 @@ export const fetchCollectionData = async <T extends Record<string, any>>(
 
 export const fetchData = async (collectionId:string) => {
   try {
-    const client = await createSessionClient();
+       const client = await createSessionClient();
+
+    if (!client) {
+      return { data: [], error: "You are not authenticated" };
+    }
     const databases = client.databases;
 
     const response = await databases.listDocuments(
@@ -450,13 +440,18 @@ export const fetchData = async (collectionId:string) => {
   }
 }
 
-export const fetchCollections = async <T>(
+export const fetchCollectionsAdmin = async <T extends Record<string, any>>(
   collectionId: string,
   params: QueryParams,
   fields?: string[],
 ): Promise<{ data: T[]|any[]; tableSize: number; error: string | null }> => {
   try {
-    const client = createSessionClient()
+    const client = await createAdminClient();
+    // const client = await createSessionClient();
+
+    if (!client) {
+      return { data: [], tableSize: 0, error: "You are not authenticated" };
+    }
 
     const databases =  (await client).databases;
     let queries: string[] = [];
@@ -498,32 +493,11 @@ export const fetchCollections = async <T>(
 
     // Process and structure the data
     const structuredData: T[] = response.documents.map((doc: any) => {
-      const transformedDoc: Partial<T> = {};
-
-      // Ensure "id" is explicitly set from "$id"
-      if (!fields || fields.includes("id")) {
-        transformedDoc["id" as keyof T] = doc.$id as any;
-        transformedDoc["createdAt" as keyof T] = doc.$createdAt as any;
-        transformedDoc["updatedAt" as keyof T] = doc.$updatedAt as any;
-      }
-
-      if (!fields) return { ...doc, id: doc?.$id } as T;
-
-      fields.forEach((field) => {
-        if (field === "createdBy" && doc.createdBy) {
-          transformedDoc["createdBy" as keyof T] = {
-            id: doc.createdBy.$id,
-            fullName: doc.createdBy.fullName,
-          } as any;
-        } else if (field in doc) {
-          transformedDoc[field as keyof T] = doc[field];
-        }
-      });
-
-      return transformedDoc as T;
+      return structureDocument<T>(doc, fields);
     });
+ 
 
-    // console.log({queries})
+    console.log({structuredData,  })
     return {
       data: fields ? structuredData : response.documents,
       tableSize: response.total,
@@ -540,4 +514,34 @@ export const fetchCollections = async <T>(
     return { data: [], tableSize: 0, error: error.message || "Failed to fetch documents." };
   }
 };
- 
+export const fetchDocumentByIdAdmin = async <T extends Record<string, any>>(
+  collectionId: string,
+  documentId: string,
+  fields?: string[]
+): Promise<{ data: T | null; error: string | null }> => {
+  try {
+    const client = await createSessionClient();
+    if (!client) {
+      return { data: null, error: "You are not authenticated" };
+    }
+    const databases = client.databases;
+
+    const response = await databases.getDocument(
+      appwriteConfig.databaseId,
+      collectionId,
+      documentId
+    );
+
+    const data = structureDocument<T>(response, fields);
+    return { data, error: null };
+  } catch (error: any) {
+    console.error("Fetch Document By ID Error:", {
+      message: error.message || "Unknown error",
+      stack: error.stack || "No stack trace",
+      status: error?.status || "Unknown status",
+      details: error?.details || "No additional details",
+    });
+    return { data: null, error: error.message || "Failed to fetch document." };
+  }
+};
+

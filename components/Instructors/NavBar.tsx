@@ -35,9 +35,9 @@ export default function InstructorNav() {
   const {user} = useUserStore()
 
   return (
-    <nav className=" w-60 border-r min-h-[90vh] bg-white p-4 max-md:hidden ">
-      <h5 className="text-xl font-semibold mb-6 px-2">Instructor Panel</h5>
-      <ul className="space-y-1">
+    <nav className=" w-60 border-r min-h-[90vh] bg-white  max-md:hidden ">
+      <h5 className="text-xl font-semibold p-4 py-6">Instructor Panel</h5>
+      <ul className="space-y-1  ">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
@@ -45,8 +45,8 @@ export default function InstructorNav() {
               <Link
                 href={getUrl(item.href)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md transition-all hover:bg-muted",
-                  isActive ? "bg-muted font-medium text-primary" : "text-muted-foreground"
+                  "flex items-center gap-3 px-4 py-3 transition-all hover:bg-muted ",
+                  isActive ? "bg-muted font-medium text-primary border-r-4 border-primary" : "text-muted-foreground"
                 )}
               >
                 <item.icon className="w-5 h-5" />

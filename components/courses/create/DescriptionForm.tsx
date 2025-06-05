@@ -1,5 +1,6 @@
 "use client";
 
+import CardWrapper from "@/components/shared/CardWrapper";
 import { CustomInput } from "@/components/shared/CustomInput";
 import { Button } from "@/components/ui/button";
 import { fields } from "@/constants";
@@ -75,46 +76,48 @@ const DescriptionForm = ({ course }: { course: Course }) => {
   const hasChanged = description !== initialDescription;
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 w-full bg-slate-50 rounded-md border space-y-4">
-      <CustomInput
-        label="Course Description"
-        description="Write a structured overview. Use keywords that improve SEO and attract the right audience."
-        value={description}
-        error={error}
-        disabled={!isEdit || isLoading}
-        onChange={handleChange}
-        isTextArea
-      />
+    <CardWrapper>
+      <form onSubmit={handleSubmit} className=" space-y-4">
+        <CustomInput
+          label="Course Description"
+          description="Write a structured overview. Use keywords that improve SEO and attract the right audience."
+          value={description}
+          error={error}
+          disabled={!isEdit || isLoading}
+          onChange={handleChange}
+          isTextArea
+        />
 
-      <div className="flex items-center justify-between">
-        {!isEdit && (
-          <button
-            type="button"
-            onClick={() => setIsEdit(true)}
-            className="flex items-center gap-1 text-sm text-green-700 hover:underline"
-          >
-            <Pen size={14} />
-            Edit description
-          </button>
-        )}
-
-        {isEdit && hasChanged && description.length >= MIN_DESCRIPTION_LENGTH && (
-          <div className="flex gap-3">
-            <Button type="submit" variant="outline" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save"}
-            </Button>
+        <div className="flex items-center justify-between">
+          {!isEdit && (
             <button
               type="button"
-              onClick={handleCancel}
-              className="text-sm text-red-600 flex items-center gap-1 hover:underline"
+              onClick={() => setIsEdit(true)}
+              className="flex items-center gap-1 text-sm text-green-700 hover:underline"
             >
-              <X size={14} />
-              Cancel
+              <Pen size={14} />
+              Edit description
             </button>
-          </div>
-        )}
-      </div>
-    </form>
+          )}
+
+          {isEdit && hasChanged && description.length >= MIN_DESCRIPTION_LENGTH && (
+            <div className="flex gap-3">
+              <Button type="submit" variant="outline" disabled={isLoading}>
+                {isLoading ? "Saving..." : "Save"}
+              </Button>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="text-sm text-red-600 flex items-center gap-1 hover:underline"
+              >
+                <X size={14} />
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
+      </form>
+    </CardWrapper>
   );
 };
 

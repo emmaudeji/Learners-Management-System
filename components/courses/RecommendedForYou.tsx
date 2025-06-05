@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react'
 import CourseSkeleton from '../common/CourseSkeleton'
-import { fetchCollectionData } from '@/lib/appwrite'
+import { fetchCollectionsAdmin,  } from '@/lib/appwrite'
 import { appwriteConfig } from '@/lib/actions/config'
 import { fields } from '@/constants'
 import { Course } from '@/types'
@@ -25,14 +25,15 @@ const RecommendedForYou = () => {
 export default RecommendedForYou
 
 const RecommendedCourses = async () => {
-    const {data,error} = await fetchCollectionData<Course>(
+    const {data,error} = await fetchCollectionsAdmin<Course>(
         appwriteConfig.coursesCollectionId,
         {
-            // filtering by userPreferences stored in the userStore
+          // filtering by userPreferences stored in the userStore
         },
-        fields.courselisting
+        fields.courselisting,
     ) 
     const courses = data??[]
+    console.log({courses})
   return (
     <section id="courses" className="py-16 px-4 bg-white padding">
     <h4 className="text-3xl font-bold text-center mb-12">Recommended for you</h4>
@@ -65,7 +66,7 @@ const RecommendedCourses = async () => {
         category: 'data-science',
       }].map(({ title, alias, category, createdBy:{fullName}, imageUrl, rating, count },i) => (
         <Link href={`/courses/${category??'category'}/${alias}`}  key={i}  className="bg-white border overflow-hidden flex flex-col h-full">
-          <Image src={imageUrl} alt={title} width={400} height={400} className="w-full bg-slate-50 h-48 object-cover" />
+          <Image src={imageUrl} alt={title} width={400} height={400} className="w-full text-[10px] bg-slate-50 h-48 object-cover" />
           <div className="flex-1 p-4 flex flex-col h justify-between">
             <div className="">
                 <h6 className="text-xl font-semibold mb-2">{title}</h6>

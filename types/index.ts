@@ -1,3 +1,5 @@
+import { MimeType } from "./mimeTypes";
+
 // types.d.ts
 export type StatusType = 'DRAFT'|'ACTIVE'|'ARCHIVED'
 export type RoleType = "SUPERADMIN" | "ADMIN" | "STUDENT" | "AUTHOR" | "TEACHER";
@@ -69,7 +71,7 @@ export type Course = {
   reviews: string[]; 
   feedbacks: string[];  
   objectives: string[];
-  imageUrl: string;  
+  media: Media;  
   lastUpdate: string;  
   user: string;  
   price: Pricing;  
@@ -192,6 +194,26 @@ export type Attachment = {
   id?: string;
   $id?: string;
   createdBy?: CreatedBy,  // relationship to 'users' table
+  status?: StatusType;
+  createdAt?: string;
+  $createdAt?: string;
+  updatedAt?: string;
+  permissions?: string[];
+}
+
+type MediaType = 'image' | 'video' | 'audio' | 'document' | 'archive' | 'code' | 'other';
+export interface Media {
+  alias: string;
+  url: string;
+  type: MediaType;
+  fileName?: string;
+  collection?: string;
+  usedFor?: string;
+  mimeType?: MimeType;
+
+  createdBy?: CreatedBy;
+  id?: string;
+  $id?: string;
   status?: StatusType;
   createdAt?: string;
   $createdAt?: string;

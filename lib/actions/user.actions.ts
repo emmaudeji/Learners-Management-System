@@ -92,7 +92,6 @@ export const createAccount = async ({
       );
     }
 
-
     return { success: true, accountId:userId };
   } catch (error) {
     return { success: false, error: (error as Error)?.message || "An error occurred while creating the account." };
@@ -101,7 +100,11 @@ export const createAccount = async ({
 
 export const getCurrentUser = async (): Promise<User | null> => {
   try {
-    const { databases, account } = await createSessionClient();
+    const client = await createSessionClient();
+    if(!client) {
+      return null; // Ensure client is available before proceeding
+    }
+    const { account, databases } = client;
 
     const result = await account.get();
 
@@ -137,7 +140,11 @@ export const getCurrentUser = async (): Promise<User | null> => {
 };
 
 export const signOutUser = async () => {
-  const { account } = await createSessionClient();
+    const client = await createSessionClient();
+    if(!client) {
+      return null; // Ensure client is available before proceeding
+    }
+    const { account, databases } = client;
 
   try {
     await account.deleteSession("current");

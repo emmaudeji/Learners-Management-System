@@ -3,7 +3,7 @@ import React from 'react'
 
 const layout = ({children}:{children:React.ReactNode}) => {
   return (
-    <section className='flex flex-col md:flex-row w-full '>
+    <section className='flex flex-col md:flex-row w-full bg-slate-50'>
         <InstructorNav/>
         {children}
     </section>

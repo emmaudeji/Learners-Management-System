@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { putRequest } from "@/utils/api";
 import { appwriteConfig } from "@/lib/actions/config";
 import { fields } from "@/constants";
+import CardWrapper from "@/components/shared/CardWrapper";
 
 const CategorySelectForm = ({ course }: { course: Course }) => {
   const initialCategory = course.category || "";
@@ -69,7 +70,8 @@ const CategorySelectForm = ({ course }: { course: Course }) => {
   const hasChanged = selectedCategory !== initialCategory;
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 w-full bg-slate-50 rounded-md border space-y-4">
+    <CardWrapper>
+      <form onSubmit={handleSubmit} className=" space-y-4">
       <CustomSelect
         name="category"
         label="Course Category"
@@ -114,6 +116,7 @@ const CategorySelectForm = ({ course }: { course: Course }) => {
         )}
       </div>
     </form>
+    </CardWrapper>
   );
 };
 
