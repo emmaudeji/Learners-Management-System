@@ -15,16 +15,16 @@ type Difficulty = 'easy' | 'medium' | 'hard';
 
 type ChapterQuizFormProps = {
   quiz?: QuizQuestion;
-  chapter:Chapter
   nextPosition: number;
+  relationship?: Record<string,string>
   onSuccess: (newQuiz: QuizQuestion) => void;
 };
 
-export default function ChapterQuizForm({
+export default function QuizSetupForm({
   quiz,
   nextPosition,
   onSuccess,
-  chapter
+  relationship
 }: ChapterQuizFormProps) {
  
     const initialForm = quiz ? {
@@ -97,7 +97,8 @@ export default function ChapterQuizForm({
         createdBy: user?.id,
         alias: generateSlug(form.question),
         status: "ACTIVE",
-        chapter:chapter.alias
+        //  capture relationship with chapter or section
+        ...relationship
       };
 
       const res = await fetch('/api/quizzes', {

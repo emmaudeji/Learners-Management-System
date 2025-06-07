@@ -1,5 +1,5 @@
 import RecommendedForYou from "@/components/courses/RecommendedForYou";
-import LandingPageHeader from "@/components/students/LandingPageHeader";
+import LandingPageHeader from "@/components/common/LandingPageHeader";
 import { getCurrentUser } from "@/lib/actions/user.actions";
 import Link from "next/link";
 

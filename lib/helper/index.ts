@@ -58,3 +58,28 @@ export async function getMediaFromCloudinary(folder: string) {
   const media = await fetchCloudinaryMedia(MEDIA_FOLDER);
   return media;
 }
+
+
+type FileCategory = "image" | "video" | "audio" | "document" | "archive" | "other";
+
+export const getFileCategory = (mimeType: string): FileCategory => {
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType.startsWith("video/")) return "video";
+  if (mimeType.startsWith("audio/")) return "audio";
+  if (
+    mimeType === "application/pdf" ||
+    mimeType === "application/msword" ||
+    mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    mimeType === "application/vnd.ms-excel" ||
+    mimeType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+    mimeType === "text/plain"
+  ) return "document";
+  if (
+    mimeType === "application/zip" ||
+    mimeType === "application/x-rar-compressed" ||
+    mimeType === "application/x-7z-compressed"
+  ) return "archive";
+
+  return "other";
+};
+ 

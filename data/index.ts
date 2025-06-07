@@ -1,3 +1,5 @@
+import { Badge } from "@/types";
+
 export const courses = [
     {
       id: 1,
@@ -255,3 +257,196 @@ export const reviews = [
     rating: 5.0,
   },
 ];
+
+export const badges: Badge[] = [
+  // Tier 1: Getting Started
+  {
+    alias: "pathfinder",
+    label: "Pathfinder",
+    icon: "🧭",
+    description: "You’ve taken the first bold step into your learning journey.",
+    categoryVibe: "New Beginnings",
+    category: 1,
+    createdBy: "system",
+  },
+  {
+    alias: "explorer",
+    label: "Explorer",
+    icon: "📚",
+    description: "Curiosity fuels your path. You’re diving into the unknown.",
+    categoryVibe: "New Beginnings",
+    category: 1,
+    createdBy: "system",
+  },
+  {
+    alias: "seeker",
+    label: "Seeker",
+    icon: "🔍",
+    description: "You ask, seek, and discover — the signs of a true learner.",
+    categoryVibe: "New Beginnings",
+    category: 1,
+    createdBy: "system",
+  },
+  {
+    alias: "trailblazer",
+    label: "Trailblazer",
+    icon: "🚶",
+    description: "You’re carving your unique path in this learning journey.",
+    categoryVibe: "New Beginnings",
+    category: 1,
+    createdBy: "system",
+  },
+
+  // Tier 2: Gaining Momentum
+  {
+    alias: "spark",
+    label: "Spark",
+    icon: "🔥",
+    description: "Your momentum is rising — learning has become ignition.",
+    categoryVibe: "Momentum",
+    category: 2,
+    createdBy: "system",
+  },
+  {
+    alias: "builder",
+    label: "Builder",
+    icon: "🛠️",
+    description: "You’re laying solid foundations with consistency and focus.",
+    categoryVibe: "Momentum",
+    category: 2,
+    createdBy: "system",
+  },
+  {
+    alias: "steady-shot",
+    label: "Steady Shot",
+    icon: "🎯",
+    description: "Your aim is steady, your direction clear.",
+    categoryVibe: "Momentum",
+    category: 2,
+    createdBy: "system",
+  },
+  {
+    alias: "insight-harvester",
+    label: "Insight Harvester",
+    icon: "💡",
+    description: "You’re connecting the dots and collecting golden insights.",
+    categoryVibe: "Momentum",
+    category: 2,
+    createdBy: "system",
+  },
+
+  // Tier 3: Overcoming Challenges
+  {
+    alias: "challenger",
+    label: "Challenger",
+    icon: "⚔️",
+    description: "You’ve met friction, and you’re still pushing through.",
+    categoryVibe: "Resilience",
+    category: 3,
+    createdBy: "system",
+  },
+  {
+    alias: "climber",
+    label: "Climber",
+    icon: "🧗",
+    description: "You’re ascending — one concept, one breakthrough at a time.",
+    categoryVibe: "Resilience",
+    category: 3,
+    createdBy: "system",
+  },
+  {
+    alias: "defender",
+    label: "Defender",
+    icon: "🛡️",
+    description: "You’ve held your ground and deepened your resolve.",
+    categoryVibe: "Resilience",
+    category: 3,
+    createdBy: "system",
+  },
+  {
+    alias: "stormbreaker",
+    label: "Stormbreaker",
+    icon: "🌪️",
+    description: "You’ve pushed through challenges and emerged stronger.",
+    categoryVibe: "Resilience",
+    category: 3,
+    createdBy: "system",
+  },
+
+  // Tier 4: Mastery Emerging
+  {
+    alias: "breakthrough",
+    label: "Breakthrough",
+    icon: "🚀",
+    description: "You’ve unlocked a powerful new level of understanding.",
+    categoryVibe: "Clarity & Confidence",
+    category: 4,
+    createdBy: "system",
+  },
+  {
+    alias: "scholar",
+    label: "Scholar",
+    icon: "🎓",
+    description: "You think like a master. You study like a pro.",
+    categoryVibe: "Clarity & Confidence",
+    category: 4,
+    createdBy: "system",
+  },
+  {
+    alias: "harmonizer",
+    label: "Harmonizer",
+    icon: "🎼",
+    description: "You’ve begun to see how it all flows together.",
+    categoryVibe: "Clarity & Confidence",
+    category: 4,
+    createdBy: "system",
+  },
+  {
+    alias: "system-thinker",
+    label: "System Thinker",
+    icon: "🔧",
+    description: "You connect pieces. You see the big picture and beyond.",
+    categoryVibe: "Clarity & Confidence",
+    category: 4,
+    createdBy: "system",
+  },
+
+  // Tier 5: Final Push
+  {
+    alias: "final-ascend",
+    label: "Final Ascend",
+    icon: "👑",
+    description: "You’re climbing the final steps. Greatness awaits.",
+    categoryVibe: "Excellence",
+    category: 5,
+    createdBy: "system",
+  },
+  {
+    alias: "finisher",
+    label: "Finisher",
+    icon: "🏁",
+    description: "You’re almost there. Every effort counts.",
+    categoryVibe: "Excellence",
+    category: 5,
+    createdBy: "system",
+  },
+  {
+    alias: "thought-leader",
+    label: "Thought Leader",
+    icon: "🧠",
+    description: "Your ideas are clear, your voice emerging.",
+    categoryVibe: "Excellence",
+    category: 5,
+    createdBy: "system",
+  },
+  {
+    alias: "star-performer",
+    label: "Star Performer",
+    icon: "🌟",
+    description: "You’ve shown consistent brilliance. The world is watching.",
+    categoryVibe: "Excellence",
+    category: 5,
+    createdBy: "system",
+  },
+];
+

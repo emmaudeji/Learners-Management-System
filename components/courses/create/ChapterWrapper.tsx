@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import ContentEditor from './ContentEditor'
 import ChapterTitleForm from './ChapterTitleForm'
-import ChapterQuizeWrapper from './ChapterQuizeWrapper'
+
 import ChapterAttachments from './ChapterAttachments'
 import { cn } from '@/lib/utils'
 import { ArrowLeft, ChevronDown, ChevronLeftCircle, ChevronRightCircle, Menu, Plus, Trash2 } from 'lucide-react'
@@ -19,6 +19,7 @@ import { useUserStore } from '@/store/useUserStore'
 import { useRouter } from 'next/navigation'
 import DeleteCard from '@/components/common/DeleteCard'
 import { useCreateCourse } from '@/context/CreateCourseContext'
+import QuizeSetupWrapper from './QuizeSetupWrapper'
 
 const ChapterContentForm = ( ) => {
   const {user} = useUserStore()
@@ -122,8 +123,8 @@ const ChapterContentForm = ( ) => {
                   </Label>
                   <p className="text-gray-600">Add a new question or update existing one.</p>
                 </div>
-
-                 <ChapterQuizeWrapper chapter={chapter!} />
+                  {/* TODO: Add  chapter quize list */}
+                 <QuizeSetupWrapper relationship={{chapter:chapter.alias}} quizeList={[]} />
             </div>
               :
               type==="attachments" ? 

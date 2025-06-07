@@ -3,7 +3,7 @@
 import { useUserStore } from '@/store/useUserStore'
 import Link from 'next/link'
 import React, { useEffect } from 'react'
-import { StudentOnboardingModal } from './StudentOnboarding'
+import { StudentOnboardingModal } from '../students/StudentOnboarding'
 import { getCurrentUser } from '@/lib/actions/user.actions'
 import { useGlobal } from '@/context/RootContext'
 import Image from 'next/image'
@@ -34,9 +34,9 @@ const LandingPageHeader = () => {
         }
       </div>
       <div>
-        <h2 className="text-xl md:text-2xl font-semibold">
+        <h4 className="text-xl md:text-2xl font-semibold">
           {isNewUser ? `Welcome, ${firstName}` : `Welcome back, ${firstName}`}
-        </h2>
+        </h4>
 
         <div className="mt-1">
           <p className="text-sm md:text-base text-gray-700">

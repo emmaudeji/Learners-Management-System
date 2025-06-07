@@ -52,7 +52,7 @@ const CreateCourseWrapper = () => {
     { step: 1, label: 'Basic Info', component: <CreateCourseStep1 />, disabled: false },
     { step: 2, label: 'Modules', component: <CourseSections/>, disabled: false },
     { step: 3, label: 'Chapters', component: <ChapterWrapper/>, disabled: !hasChapter },
-    { step: 4, label: 'Certifications', component: <CertificationSetupPanel/>, disabled: !hasChapter },
+    { step: 4, label: 'Certifications', component: <CertificationSetupPanel  />, disabled: !hasChapter },
     { step: 5, label: 'Pricing', component: <PriceForm />, disabled:  !hasChapter},  
     { step: 6, label: 'Announcement', component: <CourseAnnouncement />, disabled:  !hasChapter},  
     { step: 7, label: 'Publish Settings', component: <CourseSetting  />, disabled:  !hasChapter},

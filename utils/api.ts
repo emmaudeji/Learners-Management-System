@@ -67,17 +67,39 @@ export async function deleteRequest<Response = any>(
   return handleResponse<Response>(res, responseType);
 }
 
-export async function getRequest< Response = any>(
-  { url='/api/fetch', body, responseType = 'json' }: RequestOptions<FetchPayload>
+export async function getRequest<Response = any>(
+  { url = '/api/fetch', body, responseType = 'json' }: RequestOptions<FetchPayload>
 ): Promise<Response> {
-  const res = await fetch(url, {
+  const query = body ? `?${new URLSearchParams(serializeToQuery(body)).toString()}` : '';
+  const fullUrl = `${url}${query}`;
+
+  const res = await fetch(fullUrl, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
   });
 
   return handleResponse<Response>(res, responseType);
 }
+
+// Helper: Convert FetchPayload into flat string key-value pairs
+function serializeToQuery(payload: FetchPayload): Record<string, string> {
+  const query: Record<string, string> = {
+    collectionId: payload.collectionId,
+  };
+
+  if (payload.fields) {
+    query.fields = payload.fields.join(','); // fields[]=a&fields[]=b is also valid, but this is easier
+  }
+
+  if (payload.param) {
+    Object.entries(payload.param).forEach(([key, value]) => {
+      query[`param.${key}`] = String(value);
+    });
+  }
+
+  return query;
+}
+
 
 export async function getOneRequest< Response = any>(
   { url='/api/getOne', body, responseType = 'json' }: RequestOptions<GetOnePayload>

@@ -238,3 +238,14 @@ export interface Note {
   updatedAt?: string;
   permissions?: string[];
 }
+
+
+export type Badge = {
+  alias: string;
+  label: string;
+  icon: string;
+  description: string;
+  categoryVibe: string;
+  category: number;
+  createdBy: string;
+};

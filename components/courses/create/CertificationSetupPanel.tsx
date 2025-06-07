@@ -14,6 +14,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
+ 
+import ModuleQuizeBadgesSetup from './ModuleQuizeBadgesSetup'
+import CourseFinalStepSetup from './CourseExamProjectSetup'
+import CertificateSetupForm from './certificateSetup/CertificateSetupForm'
 
 type Chapter = {
   id: string
@@ -68,144 +74,48 @@ export default function CertificationSetupPanel() {
       mod.chapters.every((chap) => chap.quizCreated)
   )
 
+  const [activeStep, setActiveStep] = useState('moduleBadge')
+  const handleStepChange = (step: string) => {
+    setActiveStep(step)
+  }
+  const isModuleBadgeStep = activeStep === 'moduleBadge'
+  const isCertificateStep = activeStep === 'certificate'
+  const isFinalExamStep = activeStep === 'finalExam'
+  // const isAllStepsCompleted = isModuleBadgeStep && isCertificateStep && isFinalExamStep
+
   return (
-    <div className="max-w-5xl mx-auto py-10 px-4 space-y-10">
-      <h1 className="text-3xl font-bold text-center">🎓 Certification Setup</h1>
-      <p className="text-center text-muted-foreground max-w-2xl mx-auto">
-        Set up quizzes, badges, and the final exam to certify your learners. Every module must have assessments for its chapters before badges can be created.
-      </p>
-
-      {/* Modules Section */}
-      <div className="space-y-6">
-        {modules.map((mod) => {
-          const allQuizzesDone = mod.chapters.every((c) => c.quizCreated)
-
-          return (
-            <Card key={mod.id}>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    📘 {mod.title}
-                    {mod.badgeCreated ? (
-                      <Badge className="bg-green-500">Badge Ready</Badge>
-                    ) : (
-                      <Badge variant="outline">No Badge Yet</Badge>
-                    )}
-                  </CardTitle>
-                  <Button variant="outline" size="sm">
-                    Edit Module
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {mod.chapters.map((chap) => (
-                  <div key={chap.id} className="flex items-center justify-between border p-3 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <FileQuestion className="text-blue-500" size={20} />
-                      <span>{chap.title}</span>
-                    </div>
-                    {chap.quizCreated ? (
-                      <div className="flex items-center gap-2 text-green-600">
-                        <CheckCircle size={18} />
-                        <span>Quiz Created</span>
-                      </div>
-                    ) : (
-                      <Button variant="outline" size="sm">
-                        Create Quiz
-                      </Button>
-                    )}
-                  </div>
-                ))}
-
-                <Separator />
-
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <Award className="text-yellow-500" />
-                    <span className="font-medium">Module Badge</span>
-                  </div>
-                  {mod.badgeCreated ? (
-                    <div className="flex items-center gap-2 text-green-600">
-                      <CheckCircle size={18} />
-                      <span>Badge Created</span>
-                    </div>
-                  ) : allQuizzesDone ? (
-                    <Button>
-                      <PlusCircle className="mr-2" size={16} />
-                      Create Badge
-                    </Button>
-                  ) : (
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Lock size={18} />
-                      <span>Complete quizzes first</span>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
+    <div className="max-w-5xl mx-auto py-10 px-4 space-y- ">
+      
+      <div className="space-y-4 pb-10">
+        <h4 className="text-3xl font-bold text-center">🎓 Certification Setup</h4>
+        <p className="text-center text-muted-foreground max-w-2xl mx-auto">
+          Set up quizzes, badges, and the final exam to certify your learners. Every module must have assessments for its chapters before badges can be created. This is optional. You can skip this step and set it up later.
+        </p>
       </div>
 
-      {/* Final Exam Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl flex items-center gap-2">
-            📝 Final Exam Quiz
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex justify-between items-center">
-          <p className="text-muted-foreground">
-            Create a final assessment learners must pass to earn the certificate.
-          </p>
-          {finalExamCreated ? (
-            <div className="flex items-center gap-2 text-green-600">
-              <CheckCircle size={18} />
-              <span>Created</span>
-            </div>
-          ) : isAllModulesCompleted ? (
-            <Button>
-              <PlusCircle className="mr-2" size={16} />
-              Create Final Exam
-            </Button>
-          ) : (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Lock size={18} />
-              <span>Complete modules first</span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <section className="border-y border-gray-300 grid sm:grid-cols-3 sm:divide-x max-sm:divide-y divide-gray-300">
+        <button className={cn("h-12 w-full hover:bg-muted flex justify-center items-center", { "bg-primary/20 text-primary": isModuleBadgeStep })} onClick={() => handleStepChange('moduleBadge')}>Create Module Badge</button>
+        <button className={cn("h-12 w-full hover:bg-muted flex justify-center items-center", { "bg-primary/20 text-primary": isFinalExamStep })} onClick={() => handleStepChange('finalExam')}>Create Final Exam</button>
+        <button className={cn("h-12 w-full hover:bg-muted flex justify-center items-center", { "bg-primary/20 text-primary": isCertificateStep })} onClick={() => handleStepChange('certificate')}>Create Certificate</button>
+      </section>
+      {
+        isModuleBadgeStep && (
+          <ModuleQuizeBadgesSetup />
+        )
+      }
 
-      {/* Certificate Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl flex items-center gap-2">
-            📜 Course Certificate
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex justify-between items-center">
-          <p className="text-muted-foreground">
-            Design and activate a certificate learners will earn after passing the final exam.
-          </p>
-          {certificateCreated ? (
-            <div className="flex items-center gap-2 text-green-600">
-              <FileCheck size={18} />
-              <span>Certificate Created</span>
-            </div>
-          ) : finalExamCreated ? (
-            <Button>
-              <PlusCircle className="mr-2" size={16} />
-              Create Certificate
-            </Button>
-          ) : (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Lock size={18} />
-              <span>Final exam required</span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {
+        isFinalExamStep && (
+          < CourseFinalStepSetup />
+        )
+      }
+
+      {
+        isCertificateStep && (
+          <CertificateSetupForm />
+        )
+      }
+       
     </div>
   )
 }

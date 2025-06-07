@@ -25,7 +25,7 @@ type Props = {
   setEdit:  (quiz:QuizQuestion)=>void
 };
 
-const ChapterQuestionsList: React.FC<Props> = ({ quizzes, setEdit }) => {
+const QuestionsListSetup: React.FC<Props> = ({ quizzes, setEdit }) => {
   const [items, setItems] = React.useState<QuizQuestion[]>(() =>
     [...quizzes].sort((a, b) => a.position - b.position)
   );
@@ -66,7 +66,7 @@ const ChapterQuestionsList: React.FC<Props> = ({ quizzes, setEdit }) => {
   );
 };
 
-export default ChapterQuestionsList;
+export default QuestionsListSetup;
 
 type SortableQuizItemProps = {
   quiz: QuizQuestion;

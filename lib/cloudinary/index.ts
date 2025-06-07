@@ -74,6 +74,7 @@ export async function uploadToCloudinaryAction(file: File, filename?: string, fo
   const buffer = Buffer.from(arrayBuffer);
 
   const publicId = filename ? generateSlug(filename, 3) : uuidv4();
+  console.log("Uploading to Cloudinary with publicId:", publicId, filename, folder);
 
   const result = await new Promise<any>((resolve, reject) => {
     cloudinary.uploader.upload_stream(
@@ -91,6 +92,7 @@ export async function uploadToCloudinaryAction(file: File, filename?: string, fo
     ).end(buffer);
   });
 
+  console.log("Cloudinary upload result:", result);
   return result;
 }
  

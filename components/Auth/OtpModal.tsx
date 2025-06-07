@@ -24,6 +24,7 @@ import AuthSuccessModal from "./AuthSuccessModal";
 import { useUserStore } from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
 import { urls } from "@/constants/admin";
+import { toast } from "react-toastify";
 
 const OtpModal = ({
   accountId,
@@ -43,15 +44,17 @@ const OtpModal = ({
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setIsLoading(true);
+    
   
     if (!accountId || !password) {
-      console.log("Account ID and password are required");
-      setIsLoading(false);
+      toast.error("Credentials are missing. Try again.");
+      setIsOpen(false);
+      setAccountId(null);
       return;
     }
   
     try {
+      setIsLoading(true);
       const sessionId = await verifySecret({ accountId, password });
   
       if (sessionId) {

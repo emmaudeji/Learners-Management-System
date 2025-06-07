@@ -1,23 +1,20 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import ChapterQuizForm from './ChapterQuizForm';
+ 
 import { QuizQuestion, Chapter } from '@/types';
-import { Button } from '@/components/ui/button';
-import ChapterQuestionsList from './ChapterQuizesList';
+
 import { TextButton } from '@/components/shared/CustomButton';
+import QuizSetupForm from './QuizSetupForm';
+import QuestionsListSetup from './QuestionsListSetup';
 
 
-const ChapterQuizeWrapper = ({ chapter }: { chapter: Chapter }) => {
+const QuizeSetupWrapper = ({ quizeList, relationship }: { quizeList:QuizQuestion[], relationship?: Record<string,string> }) => {
   const [quiz, setQuiz] = useState<QuizQuestion | undefined>();
-  const [quizzes, setQuizzes] = useState<QuizQuestion[]>(dummyQuizQuestions);
+  const [quizzes, setQuizzes] = useState<QuizQuestion[]>(dummyQuizQuestions); // update with quizeList
   const [mode, setMode] = useState<'list' | 'form'>(
     quizzes.length === 0 ? 'form' : 'list'
   );
-
-  // useEffect(() => {
- 
-  // }, [chapter])
 
   const handleCreateSuccess = (newQuiz: QuizQuestion) => {
     setQuizzes((prev) => [...prev, newQuiz]);
@@ -41,7 +38,7 @@ const ChapterQuizeWrapper = ({ chapter }: { chapter: Chapter }) => {
         <>
           <TextButton onClick={handleAddNew} className='justify-self-end mb-4' >+ Add New Question</TextButton>
           {quizzes.length > 0 ? (
-            <ChapterQuestionsList quizzes={quizzes} setEdit={handleEdit} />
+            <QuestionsListSetup quizzes={quizzes} setEdit={handleEdit} />
           ) : (
             <div className="text-center text-gray-500 py-12 border rounded-md">
               <p>No questions yet.</p>
@@ -58,8 +55,8 @@ const ChapterQuizeWrapper = ({ chapter }: { chapter: Chapter }) => {
               ← Back to Questions List
             </TextButton>
           </div>
-          <ChapterQuizForm
-            chapter={chapter}
+          <QuizSetupForm
+            relationship={relationship}
             quiz={quiz}
             nextPosition={quizzes.length + 1}
             onSuccess={handleCreateSuccess}
@@ -70,7 +67,7 @@ const ChapterQuizeWrapper = ({ chapter }: { chapter: Chapter }) => {
   );
 };
 
-export default ChapterQuizeWrapper;
+export default QuizeSetupWrapper;
  
 
 export const dummyQuizQuestions: QuizQuestion[] = [

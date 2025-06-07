@@ -14,7 +14,6 @@ import { LayoutGrid, LayoutList, Trash2 } from 'lucide-react'
 import Heading from '@/components/common/Heading'
 import TitleForm from './TitleForm'
 import DescriptionForm from './DescriptionForm'
-import CoverImageForm from './CoverImageForm'
  
 import { CourseObjectivesForm } from './CourseObj'
 import { useCreateCourse } from '@/context/CreateCourseContext'
@@ -38,7 +37,6 @@ const CreateCourseStep1 = () => {
         <div className="space-y-8 col-span-5">
           <CategorySelectForm course={course} />
           <CourseSkillsForm course={course} />
-          {/* <CoverImageForm course={course}  /> */}
           <FileUploader course={course} />
         </div>
           

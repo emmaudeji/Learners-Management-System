@@ -1,28 +1,33 @@
-import { fetchCollectionData, updateDocument } from "@/lib/appwrite";
-import { FetchPayload } from "@/types";
+import { fetchCollectionData } from "@/lib/appwrite";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    // ✅ Parse and validate body
-    const body = (await req.json()) as FetchPayload;
-    const { collectionId, param, fields,  } = body;
+    const searchParams = req.nextUrl.searchParams;
 
-    if (!collectionId ) {
+    const collectionId = searchParams.get("collectionId");
+    const fieldsRaw = searchParams.get("fields") || "";
+    const fields = fieldsRaw.split(",").filter(Boolean); // string[] of fields
+
+    const param: Record<string, string> = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (key.startsWith("param.")) {
+        const actualKey = key.replace("param.", "");
+        param[actualKey] = value;
+      }
+    }
+
+    if (!collectionId) {
       return NextResponse.json(
-        { error: "Missing required fields: collectionId and documentId" },
+        { error: "Missing required fields: collectionId" },
         { status: 400 }
       );
     }
 
-    // ✅ Call your Appwrite function
-    const {  error, data } = await fetchCollectionData(collectionId, param, fields);
+    const { data, error } = await fetchCollectionData(collectionId, param, fields);
 
-    if ( error) {
-      return NextResponse.json(
-        { error: error ?? "Failed to fetch documents." },
-        { status: 500 }
-      );
+    if (error) {
+      return NextResponse.json({ error }, { status: 500 });
     }
 
     return NextResponse.json({ data }, { status: 200 });

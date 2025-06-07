@@ -26,6 +26,8 @@ export const appwriteConfig = {
   learnersBadgeCollectionId: process.env.NEXT_PUBLIC_APPWRITE_LEARNERS_BADGE as string,
   certificateTemplateCollectionId: process.env.NEXT_PUBLIC_APPWRITE_CERTIFICATE_TEMPLATE as string,
 
+  mediaCollectionId: process.env.NEXT_PUBLIC_APPWRITE_MEDIA_COLLECTION as string,
+
   secretKey: process.env.APPWRITE_SECRETE_KEY as string,
 };
 
